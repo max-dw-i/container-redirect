@@ -1,10 +1,10 @@
-@import "variables";
-@import "global";
-@import "loader";
-@import "toast";
-@import "container-selector";
-@import "url-maps";
-@import "csv-editor";
+@use "variables" as *;
+@use "global" as *;
+@use "loader" as *;
+@use "toast" as *;
+@use "container-selector" as *;
+@use "url-maps" as *;
+@use "csv-editor" as *;
 
 .template {
   display: none;

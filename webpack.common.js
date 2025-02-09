@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const RemarkHTML = require('remark-html');
 
 module.exports = {
 
@@ -26,7 +27,7 @@ module.exports = {
         },
       },
       {
-        test: /manifest\.(json)$/,
+        test: /manifest\.json$/,
         type: 'javascript/auto',
         use: [
           {
@@ -38,7 +39,7 @@ module.exports = {
         ],
       },
       {
-        test: /icons\/.*$/,
+        test: /icon\.png$/,
         type: 'javascript/auto',
         use: [
           {
@@ -50,7 +51,7 @@ module.exports = {
         ],
       },
       {
-        test: /\.(html)$/,
+        test: /\.html$/,
         type: 'javascript/auto',
         use: [
           {
@@ -62,20 +63,20 @@ module.exports = {
         ],
       },
       {
-        test: /docs\/.+\.(md)$/,
+        test: /\.md$/,
         use: [
           {
             loader: 'file-loader',
             options: {
               name: '[path]/[name].html',
             },
-          }, {
-            loader: 'markdown-it-vanilla-loader',
+          },
+          {
+            loader: 'remark-loader',
             options: {
-              plugins: [
-                'markdown-it-anchor',
-                'markdown-it-table-of-contents',
-              ],
+              remarkOptions: {
+                plugins: [RemarkHTML],
+              },
             },
           },
         ],
