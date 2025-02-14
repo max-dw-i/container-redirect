@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Containerise",
-  "version": "3.9.0",
+  "name": "Container Redirect",
+  "version": "3.10.0",
   "description": "Firefox extension to automatically open websites in a container",
   "icons": {
     "48": "icons/icon.png",
@@ -18,7 +18,7 @@
   ],
   "browser_action": {
     "browser_style": true,
-    "default_title": "Containerise",
+    "default_title": "Container Redirect",
     "default_popup": "ui/index.html",
     "default_icon": "icons/icon.png"
   },

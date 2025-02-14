@@ -1,14 +1,16 @@
-# <img src="https://raw.githubusercontent.com/kintesh/containerise/master/static/icons/icon.png" alt="Drawing" width="42" align="top"/> containerise
+# <img src="https://raw.githubusercontent.com/max-dw-i/container-redirect/master/static/icons/icon.png" alt="Drawing" width="42" align="top"/> Container Redirect
+
+**!!! NOTE !!!** It's a fork of a great extension [containerise](https://github.com/kintesh/containerise) (with some small fixes and additions). All the fame and glory goes to its author [kintesh](https://github.com/kintesh). The original extension is not maintained anymore hence this fork. New features and enhancements are not planned currently, bug fixes and some bits and bobs at best.
 
 Firefox extension to automatically open websites in a container
 
-|![](https://raw.githubusercontent.com/kintesh/containerise/master/static/screenshots/1.png)  |  ![](https://raw.githubusercontent.com/kintesh/containerise/master/static/screenshots/2.png)  |  ![](https://raw.githubusercontent.com/kintesh/containerise/master/static/screenshots/3.png)  |  ![](https://raw.githubusercontent.com/kintesh/containerise/master/static/screenshots/4.png)|
+|![](https://raw.githubusercontent.com/max-dw-i/container-redirect/master/static/screenshots/1.png)  |  ![](https://raw.githubusercontent.com/max-dw-i/container-redirect/master/static/screenshots/2.png)  |  ![](https://raw.githubusercontent.com/max-dw-i/container-redirect/master/static/screenshots/3.png)  |  ![](https://raw.githubusercontent.com/max-dw-i/container-redirect/master/static/screenshots/4.png)|
 | --- | --- | --- | --- |
 |Select your container and add a domain to always open all visits in the chosen container. | Add many domains as you wish. | Special `No Container` option to break out of a container. | Simple CSV based mapping of a domain to a container by name for easy backup and bulk editing. |
 
 
 # Installation
-Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-US/firefox/addon/containerise/)
+Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-US/firefox/addon/container-redirect/)
 
 
 
@@ -23,7 +25,7 @@ Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-
 
 ## Regex
 
-`@.+\.amazon\.co\.uk$, Shopping` will be treat as `.+\.amazon\.co\.uk$` regex. (suitable to subdomains and complex paths)
+`@.+\.amazon\.co\.uk, Shopping` will be treated as `.+\.amazon\.co\.uk` regex. (suitable to subdomains and complex paths)
 
 
 
@@ -33,11 +35,11 @@ Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-
 In the project directory, you can run:
 
 #### `npm ci`
-Installs required dependencies. 
+Installs required dependencies.
 
 #### `npm run webpack`
 Starts webpack with `--watch` option and outputs to `./build` directory.
- 
+
 #### `npm run build`
 Builds the extension for production use.<br>
 

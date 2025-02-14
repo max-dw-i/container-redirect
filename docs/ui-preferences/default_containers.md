@@ -1,14 +1,13 @@
 # Default containers
 
-The container into which tabs will be placed that cannot be placed into any other container. 
-In other words, if a tab opens or updates its URL to one that cannot be matched by a rule in the extension, 
- it will be put into a default container according to the preferences listed below.
+The container into which tabs will be placed that cannot be placed into any other container.
+In other words, if a tab opens or updates its URL to one that cannot be matched by a rule in the extension, it will be put into a default container according to the preferences listed below.
 
 ## Preferences
 
-The title of the group, as seen by the user, will be **Default container**. 
-The entire group can be toggled on or off. 
-If off, nothing will be done with unmatched URLs. 
+The title of the group, as seen by the user, will be **Default container**.
+The entire group can be toggled on or off.
+If off, nothing will be done with unmatched URLs.
 
 Once activated the following preferences will come into effect:
 
@@ -26,11 +25,11 @@ Other variables can be requested (most likely in feature requests).
 
 Examples:
 
-|  URL                       | containerise_{ms}          | {domain} |  {fqdn}            | default container  |
+|  URL                       | container-redirect{ms}          | {domain} |  {fqdn}            | default container  |
 |----------------------------|----------------------------|----------|--------------------|--------------------|
-|  https://example.com       | containerise_1567718601836 |  example |  example.com       | default container  |
-| https://old.example.com    | containerise_1567718628706 |  example | old.example.com    |  default container |
-| https://an.old.example.com | containerise_1567718738989 | example  | an.old.example.com | default container  |
+|  https://example.com       | container-redirect_1567718601836 |  example |  example.com       | default container  |
+| https://old.example.com    | container-redirect_1567718628706 |  example | old.example.com    |  default container |
+| https://an.old.example.com | container-redirect_1567718738989 | example  | an.old.example.com | default container  |
 
 **Lifetime** (choice list)
 

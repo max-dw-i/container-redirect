@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.0] - 15 Feb 2025
+### Changed
+- Rename the extension to be able re-upload the extension to AMO.
+
+
 ## [3.9.0] - 10 Feb 2021
 ### Added
 - Remove temporary tabs if keepOldTabs is true. Fixes #93
@@ -10,12 +15,12 @@ All notable changes to this project will be documented in this file.
 
 
 ## [3.8.1] - 07 Nov 2020
-### Added 
+### Added
 - Add "pinned", "discarded", and "isInReaderMode" properties when opening new tabs.
 
 
 ## [3.7.0] - 26 Oct 2019
-### Fixed 
+### Fixed
 - Fix matchDomainOnly without host prefix.
 
 ### Changed
@@ -78,7 +83,7 @@ All notable changes to this project will be documented in this file.
 - Support for Regex patterns (`@.+\.google\.com$` --> `.+\.google\.com$`)
 - Support for Glob patterns (`!*.google.com` --> `*.google.com`)
 - Ignore lines starting with `#` during CSV import.
- 
+
 ### Changed
 - Container icons are no longer accessible, fallback to simple indicators.
 

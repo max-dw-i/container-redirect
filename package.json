@@ -1,10 +1,16 @@
 {
-  "name": "containerise",
-  "version": "3.9.0",
+  "name": "container-redirect",
+  "version": "3.10.0",
   "description": "Firefox extension to automatically open websites in a container",
   "main": "index.js",
-  "repository": "https://kintesh@github.com/kintesh/containerise.git",
-  "author": "Kintesh <i.am@kinte.sh>",
+  "repository": "https://github.com/max-dw-i/container-redirect",
+  "author": "Maxim Shpak <max.dw.i.git@outlook.com>",
+  "contributors": [
+    {
+      "name": "Kintesh",
+      "email": "i.am@kinte.sh"
+    }
+  ],
   "license": "MIT",
   "scripts": {
     "webpack": "webpack --config ./webpack.dev --watch",
