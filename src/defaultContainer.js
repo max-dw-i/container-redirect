@@ -7,6 +7,8 @@ import PreferenceStorage from './Storage/PreferenceStorage';
 export async function buildDefaultContainer(preferences, url) {
   url = new ExtendedURL(url);
   let name = preferences['defaultContainer.containerName'];
+  const color = preferences['defaultContainer.containerColor'];
+  const icon = preferences['defaultContainer.containerIcon'];
   name = formatString(name, {
     ms: Date.now(),
     domain: url.domain,
@@ -22,7 +24,7 @@ export async function buildDefaultContainer(preferences, url) {
     container = containers[0];
   } else {
     // Create a default container
-    container = await ContextualIdentities.create(name);
+    container = await ContextualIdentities.create(name, color, icon);
   }
   const cookieStoreId = container.cookieStoreId;
 

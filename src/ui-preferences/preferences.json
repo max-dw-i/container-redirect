@@ -27,6 +27,120 @@
         "defaultValue": "Default Container"
       },
       {
+        "type": "dropdown",
+        "name": "containerColor",
+        "label": "Container color",
+        "description": "What color the container is going to have",
+        "defaultValue": "toolbar",
+        "choices": [
+          {
+            "name": "toolbar",
+            "label": "Toolbar"
+          },
+          {
+            "name": "blue",
+            "label": "Blue"
+          },
+          {
+            "name": "green",
+            "label": "Green"
+          },
+          {
+            "name": "orange",
+            "label": "Orange"
+          },
+          {
+            "name": "pink",
+            "label": "Pink"
+          },
+          {
+            "name": "purple",
+            "label": "Purple"
+          },
+          {
+            "name": "red",
+            "label": "Red"
+          },
+          {
+            "name": "turquoise",
+            "label": "Turquoise"
+          },
+          {
+            "name": "yellow",
+            "label": "Yellow"
+          },
+          {
+            "name": "RANDOM",
+            "label": "RANDOM"
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "name": "containerIcon",
+        "label": "Container icon",
+        "description": "What icon the container is going to have",
+        "defaultValue": "circle",
+        "choices": [
+          {
+            "name": "circle",
+            "label": "Circle"
+          },
+          {
+            "name": "fingerprint",
+            "label": "Fingerprint"
+          },
+          {
+            "name": "briefcase",
+            "label": "Briefcase"
+          },
+          {
+            "name": "dollar",
+            "label": "Dollar"
+          },
+          {
+            "name": "cart",
+            "label": "Cart"
+          },
+          {
+            "name": "gift",
+            "label": "Gift"
+          },
+          {
+            "name": "vacation",
+            "label": "Vacation"
+          },
+          {
+            "name": "food",
+            "label": "Food"
+          },
+          {
+            "name": "fruit",
+            "label": "Fruit"
+          },
+          {
+            "name": "pet",
+            "label": "Pet"
+          },
+          {
+            "name": "tree",
+            "label": "Tree"
+          },
+          {
+            "name": "chill",
+            "label": "Chill"
+          },
+          {
+            "name": "fence",
+            "label": "Fence"
+          },
+          {
+            "name": "RANDOM",
+            "label": "RANDOM"
+          }
+        ]
+      },
+      {
         "type": "choice",
         "name": "lifetime",
         "label": "Lifetime",

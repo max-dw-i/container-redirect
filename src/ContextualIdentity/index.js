@@ -18,7 +18,24 @@ export const COLORS = [
   'red',
   'turquoise',
   'yellow',
+  'toolbar',
 ];
+export const ICONS = [
+  'fingerprint',
+  'briefcase',
+  'dollar',
+  'cart',
+  'circle',
+  'gift',
+  'vacation',
+  'food',
+  'fruit',
+  'pet',
+  'tree',
+  'chill',
+  'fence',
+];
+const RANDOM_VAL_CONST = 'RANDOM';
 
 class ContextualIdentities {
 
@@ -31,11 +48,13 @@ class ContextualIdentities {
     });
   }
 
-  create(name) {
+  async create(name, color, icon) {
+    if (color === RANDOM_VAL_CONST) color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    if (icon === RANDOM_VAL_CONST) icon = ICONS[Math.floor(Math.random() * ICONS.length)];
     return this.contextualIdentities.create({
       name: name,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      icon: 'circle',
+      color: color,
+      icon: icon,
     });
   }
 

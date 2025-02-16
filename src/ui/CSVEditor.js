@@ -35,14 +35,21 @@ class CSVEditor {
       return false;
     }
 
-    let hostMaps = '';
-    for (const key in this.state.urlMaps) {
-      const urlMap = this.state.urlMaps[key];
-      hostMaps += `${urlMap.host} ${HOST_MAPS_SPLIT_KEY} ${urlMap.containerName}\n`;
-    }
-    hostTextarea.value = hostMaps;
-
-    hideLoader();
+    const hostLines = Object.values(this.state.urlMaps).map(urlMap => {
+      return ContextualIdentities.get(urlMap.containerName)
+        .then(containers => {
+          const container = containers[0];
+          let line = urlMap.host;
+          line += ` ${HOST_MAPS_SPLIT_KEY} ${urlMap.containerName}`;
+          line += ` ${HOST_MAPS_SPLIT_KEY} ${container.color}`;
+          line += ` ${HOST_MAPS_SPLIT_KEY} ${container.icon}`;
+          return line;
+        });
+    });
+    Promise.all(hostLines).then(lines => {
+      hostTextarea.value = lines.join('\n');
+      hideLoader();
+    });
   }
 
   addIdentity(identity, host, maps) {
@@ -55,9 +62,11 @@ class CSVEditor {
   }
 
   async createMissingContainers(missingContainers, maps) {
-    for (const containerName of missingContainers.keys()) {
-      const identity = await ContextualIdentities.create(containerName);
-      for (const host of missingContainers.get(containerName)) {
+    for (const { hosts, container } of missingContainers) {
+      const identity = await ContextualIdentities.create(
+        container.name, container.color, container.icon
+      );
+      for (const host of hosts) {
         this.addIdentity(identity, host, maps);
       }
     }
@@ -67,22 +76,31 @@ class CSVEditor {
     showLoader();
     const items = hostTextarea.value.trim().split('\n').filter(s => s.charAt(0) !== '#');
     const maps = {};
-    const missingContainers = new Map();
+    const missingContainers = {};
 
     await Promise.all(items.map((item) => {
       const hostMapParts = item.split(HOST_MAPS_SPLIT_KEY);
-      const host = cleanHostInput(hostMapParts.slice(0, -1).join(HOST_MAPS_SPLIT_KEY));
-      const containerName = hostMapParts[hostMapParts.length - 1];
+      const host = cleanHostInput(hostMapParts.slice(0, -3).join(HOST_MAPS_SPLIT_KEY));
+      const containerName = hostMapParts[hostMapParts.length - 3];
+      const containerColor = hostMapParts[hostMapParts.length - 2];
+      const containerIcon = hostMapParts[hostMapParts.length - 1];
       let identity;
 
-      if (host && containerName) {
+      if (host && containerName && containerColor && containerIcon) {
         identity = this.state.identities.find((identity) => cleanHostInput(identity.name) === cleanHostInput(containerName));
         if (!identity) {
           const trimmedContainer = containerName.trim();
-          if (!missingContainers.has(trimmedContainer)) {
-            missingContainers.set(trimmedContainer, [host]);
+          if (!(trimmedContainer in missingContainers)) {
+            missingContainers[trimmedContainer] = {
+              hosts: [host],
+              container: {
+                name: trimmedContainer,
+                color: containerColor.trim(),
+                icon: containerIcon.trim(),
+              },
+            };
           } else {
-            missingContainers.get(trimmedContainer).push(host);
+            missingContainers[trimmedContainer].hosts.push(host);
           }
         } else {
           this.addIdentity(identity, host, maps);
@@ -90,7 +108,7 @@ class CSVEditor {
       }
     }));
 
-    await this.createMissingContainers(missingContainers, maps);
+    await this.createMissingContainers(Object.values(missingContainers), maps);
 
     await Storage.clear();
     await Storage.setAll(maps);

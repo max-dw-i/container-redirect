@@ -4,6 +4,7 @@ import './InfoTooltip';
 import preferencesJson from './preferences.json';
 import BooleanPreference from './BooleanPreference';
 import ChoicePreference from './ChoicePreference';
+import DropdownPreference from './DropdownPreference';
 import ContainerPreferenceGroup from './ContainerPreferenceGroup';
 import PreferenceGroup from './PreferenceGroup';
 import StringPreference from './StringPreference';
@@ -15,6 +16,8 @@ function buildPreference(prefConf) {
       return new BooleanPreference(prefConf);
     case ChoicePreference.TYPE:
       return new ChoicePreference(prefConf);
+    case DropdownPreference.TYPE:
+      return new DropdownPreference(prefConf);
     case PreferenceGroup.TYPE:
       prefConf.preferences = prefConf.preferences.map((groupPrefConf) => {
         return buildPreference(Object.assign({}, groupPrefConf, {
@@ -49,4 +52,3 @@ preferences.map(async (preference) => {
   await preference.fillContainer();
   await preference.updateFromDb();
 });
-
