@@ -74,19 +74,67 @@ describe('utils', () => {
         describe('without host prefix', () => {
           it('should match url without path', () => {
             expect(
-                utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, {
+                utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, undefined, {
                   host: 'duckduckgo.com',
                 })
             ).toBe(true);
+          });
+          it('should match url with container', () => {
+            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: '<some container>duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should match url with no container', () => {
+            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, '', {
+                  host: '<>duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should match url with any container when unspecified', () => {
+            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: 'duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should not match url with mismatched container', () => {
+            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: '<other container>duckduckgo.com',
+                })
+            ).toBe(false);
           });
         });
         describe('without host prefix case insensitively', () => {
           it('should match url without path', () => {
             expect(
-                utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, {
+                utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, undefined, {
                   host: 'duckduckgo.com',
                 })
             ).toBe(true);
+          });
+          it('should match url with container', () => {
+            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: '<some container>duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should match url with no container', () => {
+            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, '', {
+                  host: '<>duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should match url with any container when unspecified', () => {
+            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: 'duckduckgo.com',
+                })
+            ).toBe(true);
+          });
+          it('should not match url with mismatched container', () => {
+            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
+                  host: '<other container>duckduckgo.com',
+                })
+            ).toBe(false);
           });
         });
 
@@ -94,12 +142,15 @@ describe('utils', () => {
           isRegex = !!isRegex;
           const simplePattern = isRegex?
               '@duckduckgo\\.com' : '!duckduckgo.com';
+          const containerNamePattern = isRegex?
+              '@<some container>duckduckgo\\.com' : '!<some container>duckduckgo.com';
+
           return () => {
             it('should match url without path', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://duckduckgo.com',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(true);
@@ -108,7 +159,7 @@ describe('utils', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://DuckDuckGo.com',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(true);
@@ -117,7 +168,7 @@ describe('utils', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://duckduckgo.com/?q=search+me+baby',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(true);
@@ -126,7 +177,7 @@ describe('utils', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://duckduckgo.com/UpperCase',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(true);
@@ -137,7 +188,7 @@ describe('utils', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://google.com/?q=duckduckgo',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(!matchDomainOnly);
@@ -147,10 +198,65 @@ describe('utils', () => {
               expect(
                   utils.matchesSavedMap(
                       'https://Google.com/UpperCase/?q=duckduckgo',
-                      matchDomainOnly, {
+                      matchDomainOnly, undefined, {
                         host: simplePattern,
                       })
               ).toBe(!matchDomainOnly);
+            });
+            description = `${description} and container`;
+            it(description, () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://Google.com/UpperCase/?q=duckduckgo',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(!matchDomainOnly);
+            });
+            it('should match url without path and container', () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://duckduckgo.com',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(true);
+            });
+            it('should match url without path case insensitively and container', () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://DuckDuckGo.com',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(true);
+            });
+            it('should match url with path and container', () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://duckduckgo.com/?q=search+me+baby',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(true);
+            });
+            it('should match url with path case insensitively and container', () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://DuckDuckGo.com/?q=search+me+baby',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(true);
+            });
+            it('should match url case insensitively and container', () => {
+              expect(
+                  utils.matchesSavedMap(
+                      'https://duckduckgo.com/UpperCase',
+                      matchDomainOnly, 'some container', {
+                        host: containerNamePattern,
+                      })
+              ).toBe(true);
             });
           };
         }
