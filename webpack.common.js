@@ -1,6 +1,5 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const RemarkHTML = require('remark-html');
 
 module.exports = {
 
@@ -72,11 +71,12 @@ module.exports = {
             },
           },
           {
-            loader: 'remark-loader',
+            loader: 'markdown-it-vanilla-loader',
             options: {
-              remarkOptions: {
-                plugins: [RemarkHTML],
-              },
+              plugins: [
+                'markdown-it-anchor',
+                'markdown-it-table-of-contents',
+              ],
             },
           },
         ],
