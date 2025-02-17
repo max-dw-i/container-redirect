@@ -1,6 +1,6 @@
 {
   "name": "container-redirect",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "description": "Firefox extension to automatically open websites in a container",
   "main": "index.js",
   "repository": "https://github.com/max-dw-i/container-redirect",

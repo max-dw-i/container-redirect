@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.11.0] - 15 Feb 2025
+### Changed
+- Rename the extension to be able re-upload the extension to AMO.
+
+### Added
+- Better handling of eTLDs (thank you, [mook](https://github.com/mook)).
+- Case insensitive matching (thank you, [raghur](https://github.com/raghur)).
+- Support container names in matching rules (thank you, [AlexVallat](https://github.com/AlexVallat)).
+- Add support for container colors and icons.
+
+
 ## [3.10.0] - 15 Feb 2025
 ### Changed
 - Rename the extension to be able re-upload the extension to AMO.
