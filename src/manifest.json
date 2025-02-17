@@ -3,6 +3,8 @@
   "name": "Container Redirect",
   "version": "3.10.0",
   "description": "Firefox extension to automatically open websites in a container",
+  "author": "Maxim Shpak <max.dw.i.git@outlook.com>",
+  "homepage_url": "https://github.com/max-dw-i/container-redirect",
   "icons": {
     "48": "icons/icon.png",
     "96": "icons/icon.png"
@@ -25,10 +27,10 @@
   "background": {
     "scripts": ["index.js"]
   },
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
-      "id": "containerise@kinte.sh",
-      "strict_min_version": "53.0"
+      "id": "{e70111b3-b362-47a7-bbdc-a6fb7249d47a}",
+      "strict_min_version": "57.0"
     }
   },
   "options_ui": {
