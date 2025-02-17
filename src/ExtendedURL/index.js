@@ -1,12 +1,18 @@
+import { parse } from 'tldts';
+
 export default class ExtendedURL extends URL {
   constructor(url) {
     super(url);
-    const split = this.hostname.split('.');
-    this.tld = split[split.length - 1];
-    if (split.length > 1) {
-      this.domain = split[split.length - 2];
+    const parseResult = parse(this.hostname, {
+      allowPrivateDomains: true,
+      extractHostname: false,
+    });
+
+    if (parseResult.isIp) {
+      this.domain = this.tld = parseResult.hostname;
     } else {
-      this.domain = this.tld;
+      this.tld = parseResult.publicSuffix;
+      this.domain = parseResult.domainWithoutSuffix || this.hostname;
     }
   }
 }
