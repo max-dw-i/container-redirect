@@ -1,9 +1,9 @@
 import Storage from './Storage/HostStorage';
-import ContextualIdentity, {NO_CONTAINER} from './ContextualIdentity';
+import ContextualIdentity, { NO_CONTAINER } from './ContextualIdentity';
 import Tabs from './Tabs';
 import PreferenceStorage from './Storage/PreferenceStorage';
-import {filterByKey} from './utils';
-import {buildDefaultContainer} from './defaultContainer';
+import { filterByKey } from './utils';
+import { buildDefaultContainer } from './defaultContainer';
 
 const IGNORED_URLS_REGEX = /^(about|moz-extension|file|javascript|data|chrome):/;
 
@@ -37,7 +37,7 @@ const createTab = (url, newTabIndex, currentTabId, openerTabId, cookieStoreId) =
         });
       }
     });
-    PreferenceStorage.get('keepOldTabs').then(({value}) => {
+    PreferenceStorage.get('keepOldTabs').then(({ value }) => {
       // if keepOldTabs is false, remove the 'old' tab
       // -or-
       // if the current tab is about:blank or about:newtab
@@ -72,7 +72,7 @@ async function handle(url, tabId) {
     ContextualIdentity.getAll(),
     Tabs.get(tabId),
   ]);
-  
+
   let currentTabContainerName = undefined;
   if (preferences.matchContainerName) {
     if (currentTab.cookieStoreId === NO_CONTAINER.cookieStoreId) {
@@ -82,7 +82,7 @@ async function handle(url, tabId) {
       currentTabContainerName = currentTabContainerIdentity?.name?.toLowerCase();
     }
   }
-  
+
   const hostMap = await Storage.get(url, preferences.matchDomainOnly, currentTabContainerName);
 
   if (currentTab.incognito || !hostMap) {
@@ -95,8 +95,8 @@ async function handle(url, tabId) {
   if (!hostIdentity) {
     if (preferences.defaultContainer) {
       const defaultContainer = await buildDefaultContainer(
-          filterByKey(preferences, prefKey => prefKey.startsWith('defaultContainer')),
-          url
+        filterByKey(preferences, prefKey => prefKey.startsWith('defaultContainer')),
+        url
       );
       targetCookieStoreId = defaultContainer.cookieStoreId;
       // console.debug('Going to open', url, 'in default container', targetCookieStoreId, defaultContainer.name);
@@ -113,10 +113,10 @@ async function handle(url, tabId) {
   const openInNoContainer = targetIsNoContainer && tabHasContainer;
   if ((tabInDifferentContainer && !openInNoContainer) || openInNoContainer) {
     return createTab(
-        url,
-        currentTab.index + 1, currentTab.id,
-        currentTab.openerTabId,
-        targetCookieStoreId);
+      url,
+      currentTab.index + 1, currentTab.id,
+      currentTab.openerTabId,
+      targetCookieStoreId);
   }
 
   return {};

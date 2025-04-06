@@ -74,7 +74,7 @@ export const urlKeyFromUrl = (url) => {
  * @param map
  * @return {*}
  */
-export const matchesSavedMap = (url, matchDomainOnly, currentContainerName, {host}) => {
+export const matchesSavedMap = (url, matchDomainOnly, currentContainerName, { host }) => {
   let toMatch = url;
   let urlO = new window.URL(url);
   if (matchDomainOnly) {
@@ -97,21 +97,21 @@ export const matchesSavedMap = (url, matchDomainOnly, currentContainerName, {hos
     // 1. * becomes .*
     // 2. ? becomes .?
     return new RegExp(host.substr(1)
-        .replace(/\*/g, '.*')
-        .replace(/\?/g, '.?'), 'i')
-        .test(toMatch);
+      .replace(/\*/g, '.*')
+      .replace(/\?/g, '.?'), 'i')
+      .test(toMatch);
   } else {
     const key = urlKeyFromUrl(urlO);
     const _url = ((key.indexOf('/') === -1) ? key.concat('/') : key).toLowerCase();
     const mapHost = ((host.indexOf('/') === -1) ? host.concat('/') : host).toLowerCase();
-    
+
     let mapContainer = undefined;
     let mapUrl = mapHost;
     if (currentContainerName !== undefined) {
       // Extract the container name from the map host
       [, mapContainer, mapUrl] = mapHost.match(/(?:<([^>]*)>)?(.+)/);
     }
-    
+
     return (mapContainer === undefined || mapContainer === currentContainerName) &&
       domainMatch(_url, mapUrl) && pathMatch(_url, mapUrl);
   }
@@ -120,11 +120,11 @@ export const matchesSavedMap = (url, matchDomainOnly, currentContainerName, {hos
 
 export const filterByKey = (dict, func) => {
   return Object.keys(dict)
-      .filter(func)
-      .reduce((acc, curr) => {
-        acc[curr] = dict[curr];
-        return acc;
-      }, {});
+    .filter(func)
+    .reduce((acc, curr) => {
+      acc[curr] = dict[curr];
+      return acc;
+    }, {});
 };
 
 /**
