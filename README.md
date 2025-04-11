@@ -16,16 +16,32 @@ Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-
 
 # Usage
 
-## Basic mapping
+## Glob pattern
 
-`amazon.co.uk, Shopping` will open all amazon.co.uk (not subdomains) links in Shopping container.
+Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.
 
-## Glob
-`!*.amazon.co.uk, Shopping`  will be treated as `*.amazon.co.uk` glob pattern. (suitable to subdomains)
+1. If a pattern contains only a domain, we try matching only the URL's domain (the whole domain). For example:
 
-## Regex
+- if the pattern is `duckduckgo.com`, then URLs `https://duckduckgo.com`, `https://duckduckgo.com/?q=search+me+baby` will match the pattern but URLs `https://google.com`, `https://google.com/?q=duckduckgo.com` will not match the pattern.
 
-`@.+\.amazon\.co\.uk, Shopping` will be treated as `.+\.amazon\.co\.uk` regex. (suitable to subdomains and complex paths)
+- if the pattern is `*.duckduckgo.com`, then URLs `https://subdomain.duckduckgo.com`, `https://subdomain.duckduckgo.com/?q=search+me+baby` will match the pattern but URLs `https://duckduckgo.com`, `https://google.com/?q=subdomain.duckduckgo.com`, `https://evil.duckduckgo.com.evil.com` will not match the pattern.
+
+2. If a pattern contains only not only a domain but a path, we try matching the whole URL. For example:
+
+- if the pattern is `duckduckgo.com/\?q=search+me+baby`, then only URL `https://duckduckgo.com/?q=search+me+baby` will match the pattern. **Notice that `?` is escaped with `\`. Since `*` and `?` are glob meta-characters, you need to escape them if you want them to be interpreted literally.**
+
+- if the pattern is `*.duckduckgo.com/\?q=search+me+baby`, then URL `https://subdomain.duckduckgo.com/?q=search+me+baby` will match the pattern.
+
+The glob meta-characters `*`, `?` are converted into the regex characters `.*`, `.?` under the hood so there can be more than one such a character in a pattern.
+
+## Regex pattern
+
+Regular expressions should be used when using of glob patterns won't work. A few examples:
+
+1. Search for a pattern anywhere in the URL. For example, pattern `@duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
+
+2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@.*?/.*duckduckgo\\.com.*` and URL `https://google.com/?q=duckduckgo.com`.
+
 
 ## Matching with existing container name (settings option 'Match current container name'):
 

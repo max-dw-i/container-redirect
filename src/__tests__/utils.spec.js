@@ -68,207 +68,386 @@ describe('utils', () => {
   });
 
   describe('matchesSavedMap', () => {
-    function test(matchDomainOnly) {
-      matchDomainOnly = !!matchDomainOnly;
-      return () => {
-        describe('without host prefix', () => {
-          it('should match url without path', () => {
-            expect(
-              utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, undefined, {
-                host: 'duckduckgo.com',
-              })
-            ).toBe(true);
-          });
-          it('should match url with container', () => {
-            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
-              host: '<some container>duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should match url with no container', () => {
-            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, '', {
-              host: '<>duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should match url with any container when unspecified', () => {
-            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
-              host: 'duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should not match url with mismatched container', () => {
-            expect(utils.matchesSavedMap('https://duckduckgo.com', matchDomainOnly, 'some container', {
-              host: '<other container>duckduckgo.com',
-            })
-            ).toBe(false);
-          });
-        });
-        describe('without host prefix case insensitively', () => {
-          it('should match url without path', () => {
-            expect(
-              utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, undefined, {
-                host: 'duckduckgo.com',
-              })
-            ).toBe(true);
-          });
-          it('should match url with container', () => {
-            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
-              host: '<some container>duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should match url with no container', () => {
-            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, '', {
-              host: '<>duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should match url with any container when unspecified', () => {
-            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
-              host: 'duckduckgo.com',
-            })
-            ).toBe(true);
-          });
-          it('should not match url with mismatched container', () => {
-            expect(utils.matchesSavedMap('https://Duckduckgo.com', matchDomainOnly, 'some container', {
-              host: '<other container>duckduckgo.com',
-            })
-            ).toBe(false);
-          });
-        });
+    const testCases = [
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match domain in URL',
+        ],
+        url: 'https://google.com',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern matches \'path\' part in URL but not \'domain\' part',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern does not match any part of URL',
+        ],
+        url: 'https://google.com/?q=yahoo.com',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://subdomain.duckduckgo.com',
+        matchPattern: '*.duckduckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match domain in URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '*.duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'domain only\' URL',
+          'dots correctly escaped in pattern',
+        ],
+        url: 'https://duckduckgoGcom',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'domain only\' URL',
+          'whole domain is tested',
+        ],
+        url: 'https://evil.duckduckgo.com.evil.com',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://subdomain.duckduckgo.com/?q=search+me+baby',
+        matchPattern: '*.duckduckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern matches \'path\' part in URL but not \'domain\' part',
+        ],
+        url: 'https://duckduckgo.com/?q=subdomain.duckduckgo.com',
+        matchPattern: '*.duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern does not match any part of URL',
+        ],
+        url: 'https://duckduckgo.com/?q=duckduckgo.com',
+        matchPattern: '*.duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
+        matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'path\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match \'domain\' part of URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'path\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match \'path\' part of URL',
+        ],
+        url: 'https://subdomain.duckduckgo.com',
+        matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'path\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://subdomain.duckduckgo.com/?q=search+me+baby',
+        matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path\' pattern',
+          '\'path\' URL',
+          'pattern matches \'path\' part of URL but not \'domain\' part',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://subdomain.duckduckgo.com/?q=do+not+search+me+baby',
+        matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '@^duckduckgo\\.com(?:/.*)*$',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '@^google\\.com(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^duckduckgo\\.com(?:/.*)*$',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern does not match \'domain\' part of URL',
+        ],
+        url: 'https://google.com/?q=search+me+baby',
+        matchPattern: '@^duckduckgo\\.com(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern does not match \'path\' part of URL',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '@^duckduckgo\\.com(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'path\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^duckduckgo\\.com/\\?q=search\\+me\\+baby',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
+        matchPattern: '@^duckduckgo\\.com/\\?q=search\\+me\\+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in domain\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^[^/]*duckduckgo[^/]*(?:/.*)*$',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'anywhere in domain\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '@^[^/]*duckduckgo[^/]*(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '@.*?/.*duckduckgo\\.com.*',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@.*?/.*duckduckgo\\.com.*',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'domain only with trailing slash\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: '@.*?/.*duckduckgo\\.com.*',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'domain only without trailing slash\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '@.*?/.*duckduckgo\\.com.*',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL\' pattern',
+          '\'path\' URL',
+          'pattern matches URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@duckduckgo',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL',
+        ],
+        url: 'https://google.com/?q=do+not+search+me+baby',
+        matchPattern: '@duckduckgo',
+        isUrlMatch: false,
+      },
+    ];
 
-        function testPrefixes(isRegex) {
-          isRegex = !!isRegex;
-          const simplePattern = isRegex ?
-            '@duckduckgo\\.com' : '!duckduckgo.com';
-          const containerNamePattern = isRegex ?
-            '@<some container>duckduckgo\\.com' : '!<some container>duckduckgo.com';
+    // [test case name, current container name, container name in matching pattern, match or not]
+    const containerTestArgs = [
+      ['no container', undefined, '', true],
+      ['matching container', 'CONTAINER NAME', '<CONTAINER NAME>', true],
+      ['empty container', '', '<>', true],
+      ['any container when unspecified', 'CONTAINER NAME', '', true],
+      ['mismatched container', 'CONTAINER NAME', '<OTHER CONTAINER NAME>', false],
+    ];
 
-          return () => {
-            it('should match url without path', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url without path case insensitively', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://DuckDuckGo.com',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url with path', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com/?q=search+me+baby',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url case insensitively', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com/UpperCase',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(true);
-            });
-            let prefix = matchDomainOnly ? 'should not' : 'should';
-            let description = `${prefix} match url with pattern only in path`;
-            it(description, () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://google.com/?q=duckduckgo',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(!matchDomainOnly);
-            });
-            description = `${description} case insensitively`;
-            it(description, () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://Google.com/UpperCase/?q=duckduckgo',
-                  matchDomainOnly, undefined, {
-                  host: simplePattern,
-                })
-              ).toBe(!matchDomainOnly);
-            });
-            description = `${description} and container`;
-            it(description, () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://Google.com/UpperCase/?q=duckduckgo',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(!matchDomainOnly);
-            });
-            it('should match url without path and container', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url without path case insensitively and container', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://DuckDuckGo.com',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url with path and container', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com/?q=search+me+baby',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url with path case insensitively and container', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://DuckDuckGo.com/?q=search+me+baby',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(true);
-            });
-            it('should match url case insensitively and container', () => {
-              expect(
-                utils.matchesSavedMap(
-                  'https://duckduckgo.com/UpperCase',
-                  matchDomainOnly, 'some container', {
-                  host: containerNamePattern,
-                })
-              ).toBe(true);
-            });
-          };
+    for (const tc of testCases) {
+      for (const [contTestCaseName, currCont, contInPattern, isContMatch] of containerTestArgs) {
+        for (const isOnlyLoweCase of [true, false]) {
+          const url = isOnlyLoweCase
+            ? tc.url
+            : [...tc.url].map(c => Math.round(Math.random()) === 1 ? c.toUpperCase() : c).join('');
+
+          const testCaseName = [
+            isOnlyLoweCase ? 'lower case characters' : 'random case characters',
+            contTestCaseName,
+            ...tc.name,
+          ].join(' / ');
+
+          it(testCaseName, () => expect(
+            utils.matchesSavedMap(url, currCont, { host: `${contInPattern}${tc.matchPattern}` })
+          ).toBe((tc.isUrlMatch && isContMatch)));
         }
-
-        describe('with regex host prefix', testPrefixes(true));
-        describe('with glob host prefix', testPrefixes());
-      };
+      }
     }
-
-    test();
-    describe('with matchDomainOnly', test(true));
-
   });
-
 });

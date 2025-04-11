@@ -8,15 +8,15 @@ class HostStorage extends PrefixStorage {
     this.SET_KEY = 'host';
   }
 
-  get(url, matchDomainOnly, currentContainerName) {
+  get(url, currentContainerName) {
     return super.getAll().then(maps => {
       const sorted = sortMaps(Object.keys(maps).map(key => maps[key]));
       // Sorts by domain length, then by path length
       return sorted.find((map) => {
         try {
-          return matchesSavedMap(url, matchDomainOnly, currentContainerName, map);
+          return matchesSavedMap(url, currentContainerName, map);
         } catch (e) {
-          console.error('Error matching maps', map, url, matchDomainOnly, e);
+          console.error('Error matching maps', map, url, e);
           return false;
         }
       }) || {};

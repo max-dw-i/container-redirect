@@ -1,13 +1,14 @@
 import punycode from 'punycode';
 
-export const PREFIX_REGEX = '@';
-export const PREFIX_GLOB = '!';
+export const PREFIX_REGEX_FLAG = '@';
 
 export const qs = (selector, node) => (node || document).querySelector(selector);
 export const qsAll = (selector, node) => (node || document).querySelectorAll(selector);
 export const ce = (tagName) => document.createElement(tagName);
 
 export const cleanHostInput = (value = '') => value.trim().toLowerCase();
+
+const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(@)?(.*)');
 
 const getDomain = (src = '') => src.split('/')[0];
 const getPath = (src = '') => src.replace(/^.+?\//, '');
@@ -24,97 +25,108 @@ export const sortMaps = (maps) => maps.sort((map1, map2) => {
   return ((d1 === d2) ? (p1 < p2) : (d1 < d2)) ? 1 : -1;
 });
 
-export const domainMatch = (url, map) => {
-  const url_host = getDomain(url);
-  const map_host = getDomain(map);
-  if (map_host.slice(0, 2) !== '*.') return url_host === map_host;
-  // Check wildcard matches in reverse order (com.example.*)
-  const wild_url = url_host.split('.').reverse();
-  const wild_map = map_host.slice(2).split('.').reverse();
-  if (wild_url.length < wild_map.length) return false;
-
-  for (let i = 0; i < wild_map.length; ++i)
-    if (wild_url[i] !== wild_map[i]) return false;
-  return true;
-};
-
-export const pathMatch = (url, map) => {
-  const url_path = getPath(url);
-  const map_path = getPath(map);
-  if (map_path === '*' || map_path === '') return true;
-  // Paths are always wild
-  const wild_url = url_path.split('/');
-  const wild_map = map_path.replace('/*', '').split('/');
-  if (wild_url.length < wild_map.length) return false;
-
-  for (let i = 0; i < wild_map.length; ++i)
-    if (wild_url[i] !== wild_map[i]) return false;
-  return true;
+/**
+ * Converts the punycode domain in the URL to Unicode and trims the protocol.
+ *
+ * @param {URL} url
+ * @return {string}
+ */
+export const normalizedUrl = (url) => {
+  url.hostname = punycode.toUnicode(url.hostname);
+  return url.toString().replace('https://', '').replace('http://', '');
 };
 
 /**
+ * Returns the domain part of the URL converted from punycode to Unicode.
  *
- * @param url {URL}
+ * @param {URL} url
  * @return {string}
  */
-export const urlKeyFromUrl = (url) => {
-  return punycode.toUnicode(url.hostname) + url.pathname;
+export const normalizedDomain = (url) => {
+  return punycode.toUnicode(url.hostname);
 };
+
+/**
+ * Escape all regex metacharacters in a string.
+ *
+ * @param {string} s
+ * @return {string}
+ */
+function escapeRegExp(s) {
+  // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
+  return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+/**
+ * Converts a glob matching pattern to a regular expression.
+ *
+ * @param {string} s
+ * @return {string}
+ */
+function globToRegex(s) {
+  const escapedChars = [];
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] === '\\' && (['?', '*'].includes(s[i + 1]))) {
+      escapedChars.push(s.slice(i, i + 2));
+      i = i + 2;
+    } else {
+      if (s[i] === '?') escapedChars.push('.?');
+      else if (s[i] === '*') escapedChars.push('.*');
+      else escapedChars.push(escapeRegExp(s[i]));
+      i++;
+    }
+  }
+  return escapedChars.join('');
+}
 
 /**
  * Checks if the URL matches a given hostmap
  *
  * Depending on the prefix in the hostmap it'll choose a match method:
- *  - regex
  *  - glob
- *  - standard
+ *  - regex
  *
- * @param url {String}
- * @param matchDomainOnly {Boolean=}
+ * @param {string} url
+ * @param {string} currentContainerName
  * @param map
- * @return {*}
+ * @return {boolean}
  */
-export const matchesSavedMap = (url, matchDomainOnly, currentContainerName, { host }) => {
-  let toMatch = url;
-  let urlO = new window.URL(url);
-  if (matchDomainOnly) {
-    toMatch = urlO.host;
-    urlO = new window.URL(`${urlO.protocol}//${urlO.host}`);
+export const matchesSavedMap = (url, currentContainerName, { host }) => {
+  const mapHostMatch = host.match(HOST_REGEX);
+  if (mapHostMatch === null) {
+    console.error(`couldn't parse value '${host}'`);
+    return false;
   }
-  if (currentContainerName !== undefined) {
-    toMatch = `<${currentContainerName}>${toMatch}`;
-  }
+  const [, mapContainerNameRe, regexFlag, mapUrlPattern] = mapHostMatch;
 
-  if (host[0] === PREFIX_REGEX) {
-    const regex = host.substr(1);
+  const urlO = new window.URL(url);
+  let testUrl = normalizedUrl(urlO);
+  let hasUrlMatched = false;
+  if (regexFlag) {
     try {
-      return new RegExp(regex, 'i').test(toMatch);
+      hasUrlMatched = (new RegExp(mapUrlPattern, 'i')).test(testUrl);
     } catch (e) {
-      console.error('couldn\'t test regex', regex, e);
+      console.error('couldn\'t test regex', mapUrlPattern, e);
     }
-  } else if (host[0] === PREFIX_GLOB) {
-    // turning glob into regex isn't the worst thing:
-    // 1. * becomes .*
-    // 2. ? becomes .?
-    return new RegExp(host.substr(1)
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.?'), 'i')
-      .test(toMatch);
   } else {
-    const key = urlKeyFromUrl(urlO);
-    const _url = ((key.indexOf('/') === -1) ? key.concat('/') : key).toLowerCase();
-    const mapHost = ((host.indexOf('/') === -1) ? host.concat('/') : host).toLowerCase();
-
-    let mapContainer = undefined;
-    let mapUrl = mapHost;
-    if (currentContainerName !== undefined) {
-      // Extract the container name from the map host
-      [, mapContainer, mapUrl] = mapHost.match(/(?:<([^>]*)>)?(.+)/);
+    let reStr = globToRegex(mapUrlPattern);
+    reStr = `^${reStr}$`;
+    const firstSlashIndex = mapUrlPattern.trimEnd('/').indexOf('/');
+    if (firstSlashIndex === -1) {
+      testUrl = normalizedDomain(urlO);
     }
-
-    return (mapContainer === undefined || mapContainer === currentContainerName) &&
-      domainMatch(_url, mapUrl) && pathMatch(_url, mapUrl);
+    hasUrlMatched = (new RegExp(reStr, 'i')).test(testUrl);
   }
+
+  return (
+    hasUrlMatched
+    && (
+      currentContainerName === undefined
+        ? true
+        : (new RegExp(mapContainerNameRe)).test(currentContainerName)
+    )
+  );
 };
 
 

@@ -83,7 +83,7 @@ async function handle(url, tabId) {
     }
   }
 
-  const hostMap = await Storage.get(url, preferences.matchDomainOnly, currentTabContainerName);
+  const hostMap = await Storage.get(url, currentTabContainerName);
 
   if (currentTab.incognito || !hostMap) {
     return {};
