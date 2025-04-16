@@ -15,31 +15,37 @@ describe('HostStorage', () => {
             resolve({
               'map=example.com': {
                 host: 'example.com',
+                priority: 0,
                 container: 'example',
-                enabled: true,
-              },
-              'map=kinte.sh/*': {
-                host: 'kinte.sh/*',
-                container: 'personal',
-                enabled: true,
-              },
-              'map=*.example.com': {
-                host: '*.example.com',
-                container: 'example',
-                enabled: true,
-              },
-              'map=*.kinte.sh/*': {
-                host: '*.kinte.sh/*',
-                container: 'personal',
                 enabled: true,
               },
               'map=test.example.com/here': {
                 host: 'test.example.com/here',
+                priority: 1,
                 container: 'example',
                 enabled: true,
               },
               'map=test.kinte.sh/here': {
                 host: 'test.kinte.sh/here',
+                priority: 2,
+                container: 'personal',
+                enabled: true,
+              },
+              'map=kinte.sh/*': {
+                host: 'kinte.sh/*',
+                priority: 3,
+                container: 'personal',
+                enabled: true,
+              },
+              'map=*.example.com': {
+                host: '*.example.com',
+                priority: 4,
+                container: 'example',
+                enabled: true,
+              },
+              'map=*.kinte.sh/*': {
+                host: '*.kinte.sh/*',
+                priority: 5,
                 container: 'personal',
                 enabled: true,
               },
@@ -69,31 +75,37 @@ describe('HostStorage', () => {
       expect(results).toEqual({
         'example.com': {
           host: 'example.com',
+          priority: 0,
           container: 'example',
-          enabled: true,
-        },
-        'kinte.sh/*': {
-          host: 'kinte.sh/*',
-          container: 'personal',
-          enabled: true,
-        },
-        '*.example.com': {
-          host: '*.example.com',
-          container: 'example',
-          enabled: true,
-        },
-        '*.kinte.sh/*': {
-          host: '*.kinte.sh/*',
-          container: 'personal',
           enabled: true,
         },
         'test.example.com/here': {
           host: 'test.example.com/here',
+          priority: 1,
           container: 'example',
           enabled: true,
         },
         'test.kinte.sh/here': {
           host: 'test.kinte.sh/here',
+          priority: 2,
+          container: 'personal',
+          enabled: true,
+        },
+        'kinte.sh/*': {
+          host: 'kinte.sh/*',
+          priority: 3,
+          container: 'personal',
+          enabled: true,
+        },
+        '*.example.com': {
+          host: '*.example.com',
+          priority: 4,
+          container: 'example',
+          enabled: true,
+        },
+        '*.kinte.sh/*': {
+          host: '*.kinte.sh/*',
+          priority: 5,
           container: 'personal',
           enabled: true,
         },
@@ -102,17 +114,19 @@ describe('HostStorage', () => {
   });
 
   it('should get by key', () => {
-    expect.assertions(8);
+    expect.assertions(7);
     HostStorage.get('http://example.com').then((result) => {
       expect(result).toEqual({
         host: 'example.com',
+        priority: 0,
         container: 'example',
         enabled: true,
       });
     });
-    HostStorage.get('http://kinte.sh').then((result) => {
+    HostStorage.get('http://kinte.sh/test').then((result) => {
       expect(result).toEqual({
         host: 'kinte.sh/*',
+        priority: 3,
         container: 'personal',
         enabled: true,
       });
@@ -120,27 +134,23 @@ describe('HostStorage', () => {
     HostStorage.get('http://test.example.com').then((result) => {
       expect(result).toEqual({
         host: '*.example.com',
+        priority: 4,
         container: 'example',
-        enabled: true,
-      });
-    });
-    HostStorage.get('http://test.kinte.sh').then((result) => {
-      expect(result).toEqual({
-        host: '*.kinte.sh/*',
-        container: 'personal',
         enabled: true,
       });
     });
     HostStorage.get('http://test.example.com/test').then((result) => {
       expect(result).toEqual({
         host: '*.example.com',
+        priority: 4,
         container: 'example',
         enabled: true,
       });
     });
-    HostStorage.get('http://test.kinte.sh/test').then((result) => {
+    HostStorage.get('http://test.kinte.sh/here').then((result) => {
       expect(result).toEqual({
-        host: '*.kinte.sh/*',
+        host: 'test.kinte.sh/here',
+        priority: 2,
         container: 'personal',
         enabled: true,
       });
@@ -148,13 +158,15 @@ describe('HostStorage', () => {
     HostStorage.get('http://test.example.com/here').then((result) => {
       expect(result).toEqual({
         host: 'test.example.com/here',
+        priority: 1,
         container: 'example',
         enabled: true,
       });
     });
     return HostStorage.get('http://test.kinte.sh/here/there').then((result) => {
       expect(result).toEqual({
-        host: 'test.kinte.sh/here',
+        host: '*.kinte.sh/*',
+        priority: 5,
         container: 'personal',
         enabled: true,
       });
@@ -165,11 +177,13 @@ describe('HostStorage', () => {
     const hostMaps = {
       'example.com': {
         host: 'example.com',
+        priority: 0,
         container: 'example',
         enabled: true,
       },
       'kinte.sh': {
         host: 'kinte.sh',
+        priority: 1,
         container: 'personal',
         enabled: true,
       },
@@ -180,11 +194,13 @@ describe('HostStorage', () => {
       expect(keysO).toEqual({
         'map=example.com': {
           host: 'example.com',
+          priority: 0,
           container: 'example',
           enabled: true,
         },
         'map=kinte.sh': {
           host: 'kinte.sh',
+          priority: 1,
           container: 'personal',
           enabled: true,
         },
@@ -195,6 +211,7 @@ describe('HostStorage', () => {
   it('should set one entry', () => {
     const hostMap = {
       host: 'example.com',
+      priority: 0,
       container: 'example',
       enabled: true,
     };
@@ -206,6 +223,7 @@ describe('HostStorage', () => {
       expect(keys[0]).toEqual('map=example.com');
       expect(keysO[keys[0]]).toEqual({
         host: 'example.com',
+        priority: 0,
         container: 'example',
         enabled: true,
       });

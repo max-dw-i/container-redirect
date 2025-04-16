@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 - **BREAKING** Remove matching patterns beginning with `!`. Now any pattern that does not start with `@` is a glob pattern (see [README](README.md#usage)).
 - **BREAKING** Option 'Match domain only' is removed. If a glob pattern has only a domain in it, only URL's domain is going to be checked. If a glob pattern has a domain with a path, the whole URL is going to be checked. For more granular matching use regex patterns (see [README](README.md#usage)).
 
+### Added
+- **BREAKING** The order of matching patterns is important now, it defines what pattern is going to be used if there are more than one match (the one that is higher in the list). It can be changed in the 'CSV editor' pop-up.
+
 ## [3.11.0] - 15 Feb 2025
 ### Added
 - Better handling of eTLDs (thank you, [mook](https://github.com/mook)).

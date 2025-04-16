@@ -10,19 +10,11 @@ export const cleanHostInput = (value = '') => value.trim().toLowerCase();
 
 const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(@)?(.*)');
 
-const getDomain = (src = '') => src.split('/')[0];
-const getPath = (src = '') => src.replace(/^.+?\//, '');
-
-const domainLength = (map) => getDomain(map).replace('*.', '').split('.').length;
-const pathLength = (map) => getPath(map).replace('/*', '').split('/').length;
-
 export const sortMaps = (maps) => maps.sort((map1, map2) => {
-  const d1 = domainLength(map1.host);
-  const d2 = domainLength(map2.host);
-  const p1 = pathLength(map1.host);
-  const p2 = pathLength(map2.host);
-  if (d1 === d2 && p1 === p2) return 0;
-  return ((d1 === d2) ? (p1 < p2) : (d1 < d2)) ? 1 : -1;
+  const pr1 = map1.priority;
+  const pr2 = map2.priority;
+  if (pr1 === pr2) return 0;
+  return pr1 > pr2 ? 1 : -1;
 });
 
 /**

@@ -1,7 +1,7 @@
 import ContextualIdentities from '../ContextualIdentity';
 import State from '../State';
 import Storage from '../Storage/HostStorage';
-import {cleanHostInput, qs} from '../utils';
+import {cleanHostInput, qs, sortMaps} from '../utils';
 import {hideLoader, showLoader} from './loader';
 import {hideToast, showToast} from './toast';
 
@@ -35,7 +35,7 @@ class CSVEditor {
       return false;
     }
 
-    const hostLines = Object.values(this.state.urlMaps).map(urlMap => {
+    const hostLines = sortMaps(Object.values(this.state.urlMaps)).map(urlMap => {
       return ContextualIdentities.get(urlMap.containerName)
         .then(containers => {
           const container = containers[0];
@@ -52,9 +52,10 @@ class CSVEditor {
     });
   }
 
-  addIdentity(identity, host, maps) {
+  addIdentity(identity, host, priority, maps) {
     maps[host] = {
       host,
+      priority,
       cookieStoreId: identity.cookieStoreId,
       containerName: identity.name,
       enabled: true,
@@ -66,8 +67,8 @@ class CSVEditor {
       const identity = await ContextualIdentities.create(
         container.name, container.color, container.icon
       );
-      for (const host of hosts) {
-        this.addIdentity(identity, host, maps);
+      for (const {host, priority} of hosts) {
+        this.addIdentity(identity, host, priority, maps);
       }
     }
   }
@@ -78,7 +79,7 @@ class CSVEditor {
     const maps = {};
     const missingContainers = {};
 
-    await Promise.all(items.map((item) => {
+    await Promise.all(items.map((item, priority) => {
       const hostMapParts = item.split(HOST_MAPS_SPLIT_KEY);
       const host = cleanHostInput(hostMapParts.slice(0, -3).join(HOST_MAPS_SPLIT_KEY));
       const containerName = hostMapParts[hostMapParts.length - 3];
@@ -89,10 +90,11 @@ class CSVEditor {
       if (host && containerName && containerColor && containerIcon) {
         identity = this.state.identities.find((identity) => cleanHostInput(identity.name) === cleanHostInput(containerName));
         if (!identity) {
+          const hostObj = { host, priority };
           const trimmedContainer = containerName.trim();
           if (!(trimmedContainer in missingContainers)) {
             missingContainers[trimmedContainer] = {
-              hosts: [host],
+              hosts: [hostObj],
               container: {
                 name: trimmedContainer,
                 color: containerColor.trim(),
@@ -100,10 +102,10 @@ class CSVEditor {
               },
             };
           } else {
-            missingContainers[trimmedContainer].hosts.push(host);
+            missingContainers[trimmedContainer].hosts.push(hostObj);
           }
         } else {
-          this.addIdentity(identity, host, maps);
+          this.addIdentity(identity, host, priority, maps);
         }
       }
     }));

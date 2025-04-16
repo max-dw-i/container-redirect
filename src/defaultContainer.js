@@ -40,6 +40,7 @@ export async function buildDefaultContainer(preferences, url) {
       });
       await HostStorage.set({
         host: host,
+        priority: null,
         cookieStoreId,
         containerName: name,
         enabled: true,

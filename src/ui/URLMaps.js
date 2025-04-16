@@ -4,7 +4,7 @@ import Tabs from '../Tabs';
 import {qs, qsAll} from '../utils';
 import {showLoader, hideLoader} from './loader';
 import {showToast, hideToast} from './toast';
-import {cleanHostInput} from '../utils';
+import {cleanHostInput, sortMaps} from '../utils';
 
 const addButton = qs('.add-button');
 const saveButton = qs('.save-button');
@@ -36,8 +36,7 @@ class URLMaps {
     umMaps.innerHTML = '';
     this.itemsCount = 0;
 
-    for (const key in this.state.urlMaps) {
-      const urlMap = this.state.urlMaps[key];
+    for (const urlMap of sortMaps(Object.values(this.state.urlMaps))) {
       if (this.state.selectedIdentity.cookieStoreId === urlMap.cookieStoreId) {
         this.addItem(urlMap.host);
       }
@@ -78,29 +77,35 @@ class URLMaps {
     const items = qsAll('.url-map-item');
     const maps = {};
 
-    for (const item of items) {
-      const urlInput = qs('.url-input', item);
-      const host = cleanHostInput(urlInput && urlInput.value);
+    HostStorage.getAll().then((currMap) => {
+      let hostTotalNum = Object.keys(currMap).length;
 
-      if (host) {
-        maps[host] = {
-          host: host,
-          containerName: this.state.selectedIdentity.name,
-          cookieStoreId: this.state.selectedIdentity.cookieStoreId,
-          enabled: true,
-        };
+      for (const item of items) {
+        const urlInput = qs('.url-input', item);
+        const host = cleanHostInput(urlInput && urlInput.value);
+
+        if (host) {
+          maps[host] = {
+            host: host,
+            priority: hostTotalNum,
+            containerName: this.state.selectedIdentity.name,
+            cookieStoreId: this.state.selectedIdentity.cookieStoreId,
+            enabled: true,
+          };
+
+          hostTotalNum++;
+        }
       }
-    }
 
-    Promise.all([
-      HostStorage.setAll(maps),
-    ]).then(() => {
-      hideLoader();
-      showToast('Saved!');
-      setTimeout(() => hideToast(), 3000);
+      Promise.all([
+        HostStorage.setAll(maps),
+      ]).then(() => {
+        hideLoader();
+        showToast('Saved!');
+        setTimeout(() => hideToast(), 3000);
+      });
     });
   }
-
 }
 
 export default new URLMaps({
