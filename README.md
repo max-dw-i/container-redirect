@@ -51,6 +51,16 @@ Regular expressions should be used when using of glob patterns won't work. A few
 
 - `<(?!profile \d).*>@.+\.facebook.com, Profile 1` will open all links to `facebook.com` in the `Profile 1` container unless the current tab is already assigned to `Profile 1`, `Profile 2`, `Profile 3`, etc.
 
+
+
+# Integration with Mozilla Addons
+
+## [Temporary Containers Plus](https://addons.mozilla.org/en-GB/firefox/addon/temporary-containers-plus/)
+
+To prevent some [issues](https://github.com/GodKratos/temporary-containers/issues/38), `Temporary Containers Plus` is allowed to request containers' patterns.
+
+
+
 # Development
 
 ## Available Scripts
