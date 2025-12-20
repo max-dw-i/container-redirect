@@ -111,14 +111,10 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
     hasUrlMatched = (new RegExp(reStr, 'i')).test(testUrl);
   }
 
-  return (
-    hasUrlMatched
-    && (
-      currentContainerName === undefined
-        ? true
-        : (new RegExp(mapContainerNameRe)).test(currentContainerName)
-    )
-  );
+  if (!hasUrlMatched) return false;
+  if (currentContainerName === undefined || mapContainerNameRe === undefined) return true;
+  if (mapContainerNameRe.length === 0) return currentContainerName.length === 0;
+  return (new RegExp(mapContainerNameRe)).test(currentContainerName);
 };
 
 
