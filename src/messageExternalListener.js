@@ -2,6 +2,7 @@ import HostStorage from './Storage/HostStorage';
 
 const allowedExternalExtensions = [
   '{c607c8df-14a7-4f28-894f-29e8722976af}', // Temporary Containers
+  '{1ea2fa75-677e-4702-b06a-50fc7d06fe7e}', // Temporary Containers Plus
 ];
 
 export const messageExternalListener = (message, sender) => {
