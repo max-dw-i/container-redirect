@@ -423,11 +423,16 @@ describe('utils', () => {
 
     // [test case name, current container name, container name in matching pattern, match or not]
     const containerTestArgs = [
-      ['no container', undefined, '', true],
-      ['matching container', 'CONTAINER NAME', '<CONTAINER NAME>', true],
-      ['empty container', '', '<>', true],
-      ['any container when unspecified', 'CONTAINER NAME', '', true],
-      ['mismatched container', 'CONTAINER NAME', '<OTHER CONTAINER NAME>', false],
+      // 'Edge case' below tests the situation when the tab is opened in an unknown container (which
+      // is impossible) or 'ContextualIdentity' of the tab has no 'name' set (which is also
+      // impossible according to the MSDN docs). This case was tested in the original extension so I
+      // keep it here just in case
+      ['tab without container and container not specified in pattern (edge case)', undefined, '', true],
+      ['tab without container and container not specified in pattern', '', '', true],
+      ['tab container matches container specified in pattern', 'CONTAINER NAME', '<CONTAINER NAME>', true],
+      ['tab without container and rule \'No container\' specified in pattern', '', '<>', true],
+      ['tab with any container and container not specified in pattern', 'CONTAINER NAME', '', true],
+      ['tab container mismatches container specified in pattern', 'CONTAINER NAME', '<OTHER CONTAINER NAME>', false],
     ];
 
     for (const tc of testCases) {
