@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.12.2] - 20 Dec 2025
+### Added
+- Add integration with extension `Temporary Containers Plus`. See the [PR](https://github.com/max-dw-i/container-redirect/pull/8).
+
+### Fixed
+- If a tab is opened in a container (1) and there's a container (2) with a pettern like `<>example.com`, when you open `example.com`, it stays in the container (2). See the [issue](https://github.com/max-dw-i/container-redirect/issues/7).
+
 ## [3.12.0] - 16 Apr 2025
 ### Changed
 - **BREAKING** Remove matching patterns beginning with `!`. Now any pattern that does not start with `@` is a glob pattern (see [README](README.md#usage)).
