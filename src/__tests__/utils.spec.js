@@ -429,11 +429,11 @@ describe('utils', () => {
       // keep it here just in case
       ['tab without container and container not specified in pattern (edge case)', undefined, '', true],
       ['tab without container and container not specified in pattern', '', '', true],
-      ['tab container matches container specified in pattern', 'CONTAINER NAME', '<CONTAINER NAME>', true],
+      ['tab container matches container specified in pattern', 'CONTAINER', '<CONTAINER>', true],
       ['tab without container and rule \'No container\' specified in pattern', '', '<>', true],
-      ['tab with any container and container not specified in pattern', 'CONTAINER NAME', '', true],
-      ['tab with any container and rule \'No container\' specified in pattern', 'CONTAINER NAME', '<>', false],
-      ['tab container mismatches container specified in pattern', 'CONTAINER NAME', '<OTHER CONTAINER NAME>', false],
+      ['tab with any container and container not specified in pattern', 'CONTAINER', '', true],
+      ['tab with any container and rule \'No container\' specified in pattern', 'CONTAINER', '<>', false],
+      ['tab container mismatches container specified in pattern', 'CONTAINER', '<OTHER_CONTAINER>', false],
     ];
 
     for (const tc of testCases) {
