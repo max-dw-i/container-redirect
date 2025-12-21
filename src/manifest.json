@@ -25,7 +25,9 @@
     "default_icon": "icons/icon.png"
   },
   "background": {
-    "scripts": ["index.js"]
+    "scripts": [
+      "index.js"
+    ]
   },
   "browser_specific_settings": {
     "gecko": {
