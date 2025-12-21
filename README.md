@@ -55,9 +55,9 @@ Regular expressions should be used when using of glob patterns won't work. A few
 
 # Integration with Mozilla Addons
 
-## [Temporary Containers Plus](https://addons.mozilla.org/en-GB/firefox/addon/temporary-containers-plus/)
+## [Temporary Containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/), [Temporary Containers Plus](https://addons.mozilla.org/en-GB/firefox/addon/temporary-containers-plus/)
 
-To prevent some [issues](https://github.com/GodKratos/temporary-containers/issues/38), `Temporary Containers Plus` is allowed to request containers' patterns.
+To prevent some [issues](https://github.com/GodKratos/temporary-containers/issues/38), `Temporary Containers` and `Temporary Containers Plus` are allowed to request containers' patterns.
 
 
 
