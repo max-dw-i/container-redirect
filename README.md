@@ -34,6 +34,7 @@ Glob patterns cover most common cases (see the examples below). For more complic
 
 The glob meta-characters `*`, `?` are converted into the regex characters `.*`, `.?` under the hood so there can be more than one such a character in a pattern.
 
+
 ## Regex pattern
 
 Regular expressions should be used when using of glob patterns won't work. A few examples:
@@ -45,12 +46,15 @@ Regular expressions should be used when using of glob patterns won't work. A few
 
 ## Matching with existing container name (settings option 'Match current container name'):
 
+**The expression inside `<...>` must be a valid regular expression (`<>` is an exception to map to `No container`)**.
+
+Examples:
+
 - `<>amazon.co.uk, Shopping` will open all `amazon.co.uk` (not subdomains) links in the `Shopping` container but only if the current tab is not assigned to any container (`<>` at the begining means `No Container`)
 
 - `<shopping>@(?!.+\.amazon\.co\.uk).*, No Container` will open all links from inside the `Shopping` container that are _not_ `.amazon.co.uk` subdomains in the `No Container`
 
-- `<(?!profile \d).*>@.+\.facebook.com, Profile 1` will open all links to `facebook.com` in the `Profile 1` container unless the current tab is already assigned to `Profile 1`, `Profile 2`, `Profile 3`, etc.
-
+- `<^(?!Profile \d$)>@.+\.facebook.com, Profile 1` will open all links to `facebook.com` in the `Profile 1` container unless the current tab is already assigned to `Profile 1`, `Profile 2`, `Profile 3`, etc.
 
 
 # Integration with Mozilla Addons
