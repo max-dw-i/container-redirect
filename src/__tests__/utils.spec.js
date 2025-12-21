@@ -434,6 +434,24 @@ describe('utils', () => {
       ['tab with any container and container not specified in pattern', 'CONTAINER', '', true],
       ['tab with any container and rule \'No container\' specified in pattern', 'CONTAINER', '<>', false],
       ['tab container mismatches container specified in pattern', 'CONTAINER', '<OTHER_CONTAINER>', false],
+      [
+        'tab without container matches container specified in pattern (not \'CONTAINER\' regex group)',
+        '',
+        '<^(?!CONTAINER$)>',
+        true,
+      ],
+      [
+        'tab container matches container specified in pattern (not \'CONTAINER\' regex group)',
+        'OTHER_CONTAINER',
+        '<^(?!CONTAINER$)>',
+        true,
+      ],
+      [
+        'tab container mismatches container specified in pattern (not \'CONTAINER\' regex group)',
+        'CONTAINER',
+        '<^(?!CONTAINER$)>',
+        false,
+      ],
     ];
 
     for (const tc of testCases) {
