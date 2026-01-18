@@ -57,6 +57,21 @@ Examples:
 - `<^(?!Profile \d$)>@.+\.facebook.com, Profile 1` will open all links to `facebook.com` in the `Profile 1` container unless the current tab is already assigned to `Profile 1`, `Profile 2`, `Profile 3`, etc.
 
 
+## CSV Editor
+
+You can use a CSV editor to set up the container rules (*pencil* icon). The rules have the format of `host/URL pattern`, `container name`, `container color` (optional), `container icon` (optional). For example,
+
+```csv
+www.reddit.com , reddit , orange , fruit
+google.com , Google , blue , fingerprint
+```
+
+If the container defined in the rule already exists, the values of the color and icon will be ignored (the values of the already existing container will be fetched and used when the changes are saved).
+
+If the container defined in the rule does not exist, it will be created. If the optional values (color and icon) are not set, random values will be chosen.
+
+
+
 # Integration with Mozilla Addons
 
 ## [Temporary Containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/), [Temporary Containers Plus](https://addons.mozilla.org/en-GB/firefox/addon/temporary-containers-plus/)

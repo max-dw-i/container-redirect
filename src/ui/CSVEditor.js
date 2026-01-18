@@ -1,4 +1,4 @@
-import ContextualIdentities from '../ContextualIdentity';
+import ContextualIdentities, {RANDOM_VAL_CONST as RANDOM_CONTAINER_VAL} from '../ContextualIdentity';
 import State from '../State';
 import Storage from '../Storage/HostStorage';
 import {cleanHostInput, qs, sortMaps} from '../utils';
@@ -81,31 +81,40 @@ class CSVEditor {
 
     await Promise.all(items.map((item, priority) => {
       const hostMapParts = item.split(HOST_MAPS_SPLIT_KEY);
+      for (let i = hostMapParts.length; i < 4; i++) hostMapParts.push('');
       const host = cleanHostInput(hostMapParts.slice(0, -3).join(HOST_MAPS_SPLIT_KEY));
       const containerName = hostMapParts[hostMapParts.length - 3];
       const containerColor = hostMapParts[hostMapParts.length - 2];
       const containerIcon = hostMapParts[hostMapParts.length - 1];
       let identity;
 
-      if (host && containerName && containerColor && containerIcon) {
-        identity = this.state.identities.find((identity) => cleanHostInput(identity.name) === cleanHostInput(containerName));
-        if (!identity) {
-          const hostObj = { host, priority };
-          const trimmedContainer = containerName.trim();
-          if (!(trimmedContainer in missingContainers)) {
-            missingContainers[trimmedContainer] = {
-              hosts: [hostObj],
-              container: {
-                name: trimmedContainer,
-                color: containerColor.trim(),
-                icon: containerIcon.trim(),
-              },
-            };
-          } else {
-            missingContainers[trimmedContainer].hosts.push(hostObj);
-          }
+      if (!containerName) {
+        console.warn(`Cannot extract 'container name' from line '${item}'`);
+        return;
+      }
+
+      if (!host) {
+        console.warn(`Cannot extract 'host' from line '${item}'`);
+        return;
+      }
+
+      identity = this.state.identities.find((identity) => cleanHostInput(identity.name) === cleanHostInput(containerName));
+      if (identity) {
+        this.addIdentity(identity, host, priority, maps);
+      } else {
+        const hostObj = { host, priority };
+        const trimmedContainer = containerName.trim();
+        if (trimmedContainer in missingContainers) {
+          missingContainers[trimmedContainer].hosts.push(hostObj);
         } else {
-          this.addIdentity(identity, host, priority, maps);
+          missingContainers[trimmedContainer] = {
+            hosts: [hostObj],
+            container: {
+              name: trimmedContainer,
+              color: containerColor.trim() || RANDOM_CONTAINER_VAL,
+              icon: containerIcon.trim() || RANDOM_CONTAINER_VAL,
+            },
+          };
         }
       }
     }));

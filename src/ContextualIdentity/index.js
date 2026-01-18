@@ -35,7 +35,7 @@ export const ICONS = [
   'chill',
   'fence',
 ];
-const RANDOM_VAL_CONST = 'RANDOM';
+export const RANDOM_VAL_CONST = 'RANDOM';
 
 class ContextualIdentities {
 
