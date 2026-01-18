@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.12.3] - 18 Jan 2026
+### Fixed
+- Fix CSV editor. Import rules correctly even if the values of the container color and icon are empty or do not match the values of the existing container.
+
 ## [3.12.2] - 20 Dec 2025
 ### Added
 - Add integration with extension `Temporary Containers Plus`. See the [PR](https://github.com/max-dw-i/container-redirect/pull/8).
