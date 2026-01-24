@@ -1,5 +1,7 @@
 import punycode from 'punycode';
 
+export const MAX_EXTENSION_POPUP_WIDTH = 800;  // px, found in google
+
 export const PREFIX_REGEX_FLAG = '@';
 
 export const qs = (selector, node) => (node || document).querySelector(selector);

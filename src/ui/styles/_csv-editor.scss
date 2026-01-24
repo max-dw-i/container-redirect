@@ -3,8 +3,8 @@
 .csv-editor {
   position: absolute;
   top: 1rem;
-  right: 1rem;
-  left: 1rem;
+  right: $csvEditorRight;
+  left: $csvEditorLeft;
   bottom: 1rem;
   background: linear-gradient(to bottom, $gradient-top, $gradient-bottom);
   z-index: 1;
@@ -16,11 +16,16 @@
 
   p {
     margin-bottom: 1rem;
+    display: block;
   }
 
   code {
     margin-bottom: 1rem;
-    display: inline-block;
+    display: block;
+  }
+
+  .ce-buttons {
+    display: block;
   }
 
   button {
@@ -35,9 +40,9 @@
 .ce-hosts-textarea {
   background: transparent;
   width: 100%;
-  min-height: 200px;
-  max-height: 400px;
-  resize: vertical;
+  min-height: 240px;
+  min-width: calc($bodyMinWidth - $csvEditorLeft - $csvEditorRight);
+  resize: horizontal;
   padding: 6px;
   font-family: monospace;
   border: 1px solid $border-color;
