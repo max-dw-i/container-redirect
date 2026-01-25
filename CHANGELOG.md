@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.12.4] - 25 Jan 2026
+### Added
+- CSV editor. The textarea can be resized horizontally to fit longer lines without wrapping.
+
 ## [3.12.3] - 18 Jan 2026
 ### Fixed
 - Fix CSV editor. Import rules correctly even if the values of the container color and icon are empty or do not match the values of the existing container.
