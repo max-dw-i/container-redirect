@@ -70,7 +70,7 @@ If the container defined in the rule already exists, the values of the color and
 
 If the container defined in the rule does not exist, it will be created. If the optional values (color and icon) are not set, random values will be chosen.
 
-
+**IMPORTANT: the rule order matters! You might have more than one pattern that match your URL. In this case the first one is going to be used (the one that is closest to the top of the list).**
 
 # Integration with Mozilla Addons
 
