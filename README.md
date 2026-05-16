@@ -57,6 +57,25 @@ Examples:
 - `<^(?!Profile \d$)>@.+\.facebook.com, Profile 1` will open all links to `facebook.com` in the `Profile 1` container unless the current tab is already assigned to `Profile 1`, `Profile 2`, `Profile 3`, etc.
 
 
+## Rule order
+
+Unlike the original extension, this one supports rule order. The higher a rule is in the CSV list (see below), the higher its priority. If more than one rule matches the URL, the rule with the highest priority is going to be used. For example, the current URL is `https://www.reddit.com/r/firefox/`. You'd like to open the `firefox` subreddit in the container **Reddit-Firefox** and the rest of `reddit` URLs should be opened in the container **Reddit**. If your rule list is
+
+```
+www.reddit.com , Reddit , blue , circle
+www.reddit.com/r/firefox/ , Reddit-Firefox , orange , circle
+```
+
+then all the `reddit` URLs are going to be opened in the **Reddit** container (including `https://www.reddit.com/r/firefox/`) because it's the top rule in the list (hence it has a higher priority than the 2nd rule). Now, if you change the rule order to
+
+```
+www.reddit.com/r/firefox/ , Reddit-Firefox , orange , circle
+www.reddit.com , Reddit , blue , circle
+```
+
+now everything works as it's intended. Only the URL `https://www.reddit.com/r/firefox/` is opened in the **Reddit-Firefox** container. The rest of `reddit` URLs are opened in the **Reddit** container.
+
+
 ## CSV Editor
 
 You can use a CSV editor to set up the container rules (*pencil* icon). The rules have the format of `host/URL pattern`, `container name`, `container color` (optional), `container icon` (optional). For example,
