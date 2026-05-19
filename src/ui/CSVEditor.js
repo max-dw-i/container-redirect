@@ -110,7 +110,10 @@ class CSVEditor {
 
   async saveUrlMaps() {
     showLoader();
-    const items = hostTextarea.value.trim().split('\n').filter(s => s.charAt(0) !== '#');
+    const items = hostTextarea.value
+      .split('\n')
+      .map(s => s.trim())
+      .filter(s => s && s.charAt(0) !== '#');
     const maps = {};
     const missingContainers = {};
 
@@ -162,6 +165,7 @@ class CSVEditor {
     hideLoader();
     showToast('Saved!');
     setTimeout(() => hideToast(), 3000);
+    this.render();
   }
 
   showEditor() {
