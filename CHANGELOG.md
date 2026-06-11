@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Comments are stripped correctly when CSV-editor is used.
+- Bug with 'Matching current container name'. Any rule with a container name set (for example, `<Work>github.com`) triggered if the current tab was a 'No Container' one.
 
 ## [3.12.4] - 25 Jan 2026
 ### Added

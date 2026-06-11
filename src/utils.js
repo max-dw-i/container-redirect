@@ -114,11 +114,10 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
   }
 
   if (!hasUrlMatched) return false;
-  if (currentContainerName === undefined || mapContainerNameRe === undefined) return true;
-  const currentContainerNameTrimmed = currentContainerName.trim();
-  const mapContainerNameReTrimmed = mapContainerNameRe.trim();
-  if (mapContainerNameReTrimmed.length === 0) return currentContainerNameTrimmed.length === 0;
-  return (new RegExp(mapContainerNameReTrimmed)).test(currentContainerNameTrimmed);
+  if (mapContainerNameRe === undefined) return true;
+  if (mapContainerNameRe.trim().length === 0) return currentContainerName === undefined || currentContainerName.trim().length === 0;
+  if (currentContainerName === undefined) return false;
+  return (new RegExp(mapContainerNameRe.trim())).test(currentContainerName.trim());
 };
 
 
