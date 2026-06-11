@@ -136,19 +136,19 @@ class CSVEditor {
         return;
       }
 
-      identity = this.state.identities.find((identity) => cleanHostInput(identity.name) === cleanHostInput(containerName));
+      const trimmedContainerName = containerName.trim();
+      identity = this.state.identities.find((identity) => identity.name.trim() === trimmedContainerName);
       if (identity) {
         this.addIdentity(identity, host, priority, maps);
       } else {
         const hostObj = { host, priority };
-        const trimmedContainer = containerName.trim();
-        if (trimmedContainer in missingContainers) {
-          missingContainers[trimmedContainer].hosts.push(hostObj);
+        if (trimmedContainerName in missingContainers) {
+          missingContainers[trimmedContainerName].hosts.push(hostObj);
         } else {
-          missingContainers[trimmedContainer] = {
+          missingContainers[trimmedContainerName] = {
             hosts: [hostObj],
             container: {
-              name: trimmedContainer,
+              name: trimmedContainerName,
               color: containerColor.trim() || RANDOM_CONTAINER_VAL,
               icon: containerIcon.trim() || RANDOM_CONTAINER_VAL,
             },
