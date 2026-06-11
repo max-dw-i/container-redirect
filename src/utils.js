@@ -8,7 +8,7 @@ export const qs = (selector, node) => (node || document).querySelector(selector)
 export const qsAll = (selector, node) => (node || document).querySelectorAll(selector);
 export const ce = (tagName) => document.createElement(tagName);
 
-export const cleanHostInput = (value = '') => value.trim().toLowerCase();
+export const cleanHostInput = (value = '') => value.trim();
 
 const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(@)?(.*)');
 
@@ -99,7 +99,7 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
   let hasUrlMatched = false;
   if (regexFlag) {
     try {
-      hasUrlMatched = (new RegExp(mapUrlPattern, 'i')).test(testUrl);
+      hasUrlMatched = (new RegExp(mapUrlPattern)).test(testUrl);
     } catch (e) {
       console.error('couldn\'t test regex', mapUrlPattern, e);
     }
@@ -110,13 +110,15 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
     if (firstSlashIndex === -1) {
       testUrl = normalizedDomain(urlO);
     }
-    hasUrlMatched = (new RegExp(reStr, 'i')).test(testUrl);
+    hasUrlMatched = (new RegExp(reStr)).test(testUrl);
   }
 
   if (!hasUrlMatched) return false;
   if (currentContainerName === undefined || mapContainerNameRe === undefined) return true;
-  if (mapContainerNameRe.length === 0) return currentContainerName.length === 0;
-  return (new RegExp(mapContainerNameRe)).test(currentContainerName);
+  const currentContainerNameTrimmed = currentContainerName.trim();
+  const mapContainerNameReTrimmed = mapContainerNameRe.trim();
+  if (mapContainerNameReTrimmed.length === 0) return currentContainerNameTrimmed.length === 0;
+  return (new RegExp(mapContainerNameReTrimmed)).test(currentContainerNameTrimmed);
 };
 
 

@@ -79,7 +79,7 @@ async function handle(url, tabId) {
       currentTabContainerName = '';
     } else {
       const currentTabContainerIdentity = identities.find((identity) => identity.cookieStoreId === currentTab.cookieStoreId);
-      currentTabContainerName = currentTabContainerIdentity?.name?.toLowerCase();
+      currentTabContainerName = currentTabContainerIdentity?.name;
     }
   }
 

@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.13.0] -
+### Changed
+- **BREAKING** Patterns, container names are now case-sensitive. The original extension converted any URL pattern to lowercase, meaning you could not write a pattern that'd match a URL with capital letters in it. Later, we added changes that introduced case-insensitive matching. The problem is that `RFC 3986` supports capital letters in URL paths but we ignored those cases since our pattern matching was case-insensitive. The same problem applied to container names. The names were converted to lowercase under the hood but Firefox supports case-sensitive names (so 'REDDIT' and 'reddit' are 2 different containers). These 2 problems should be fixed now.
+
+### Fixed
+- Comments are stripped correctly when CSV-editor is used.
+
 ## [3.12.4] - 25 Jan 2026
 ### Added
 - CSV editor. The textarea can be resized horizontally to fit longer lines without wrapping.

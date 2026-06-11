@@ -92,6 +92,16 @@ describe('utils', () => {
       {
         name: [
           'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern does not match domain in URL (case-sensitivity)',
+        ],
+        url: 'https://google.com',
+        matchPattern: 'GOOGLE.COM',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
           '\'path\' URL',
           'pattern matches domain in URL',
         ],
@@ -213,6 +223,26 @@ describe('utils', () => {
         name: [
           'non-regex plain \'path\' pattern',
           '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, lowecase path, uppercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'DUCKDUCKGO.COM/\\?q=SEARCH+ME+BABY',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
+        matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path\' pattern',
+          '\'path\' URL',
           'pattern does not match URL',
         ],
         url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
@@ -283,6 +313,16 @@ describe('utils', () => {
         name: [
           'regex \'domain only\' pattern',
           '\'domain only\' URL',
+          'pattern does not match URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com',
+        matchPattern: '@^DUCKDUCKGO\\.COM(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'domain only\' URL',
           'pattern does not match URL',
         ],
         url: 'https://duckduckgo.com',
@@ -298,6 +338,16 @@ describe('utils', () => {
         url: 'https://duckduckgo.com/?q=search+me+baby',
         matchPattern: '@^duckduckgo\\.com(?:/.*)*$',
         isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^DUCKDUCKGO\\.COM(?:/.*)*$',
+        isUrlMatch: false,
       },
       {
         name: [
@@ -333,6 +383,26 @@ describe('utils', () => {
         name: [
           'regex \'path\' pattern',
           '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, lowecase path, uppercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
+        matchPattern: '@^duckduckgo\\.com/\\?q=search\\+me\\+baby',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'path\' pattern',
+          '\'path\' URL',
           'pattern does not match URL',
         ],
         url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
@@ -353,6 +423,16 @@ describe('utils', () => {
         name: [
           'regex \'anywhere in domain\' pattern',
           '\'path\' URL',
+          'pattern does not match URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@^[^/]*DUCKDUCKGO[^/]*(?:/.*)*$',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in domain\' pattern',
+          '\'path\' URL',
           'pattern does not match URL',
         ],
         url: 'https://google.com/?q=duckduckgo.com',
@@ -368,6 +448,26 @@ describe('utils', () => {
         url: 'https://google.com/?q=duckduckgo.com',
         matchPattern: '@.*?/.*duckduckgo\\.com.*',
         isUrlMatch: true,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, lowercase path, uppercase pattern)',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '@.*?/.*DUCKDUCKGO\\.COM.*',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern',
+          '\'path\' URL',
+          'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
+        ],
+        url: 'https://google.com/?q=DUCKDUCKGO.COM',
+        matchPattern: '@.*?/.*duckduckgo\\.com.*',
+        isUrlMatch: false,
       },
       {
         name: [
@@ -413,6 +513,16 @@ describe('utils', () => {
         name: [
           'regex \'anywhere in URL\' pattern',
           '\'path\' URL',
+          'pattern does not match URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: '@DUCKDUCKGO',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL\' pattern',
+          '\'path\' URL',
           'pattern does not match URL',
         ],
         url: 'https://google.com/?q=do+not+search+me+baby',
@@ -435,6 +545,18 @@ describe('utils', () => {
       ['tab with any container and rule \'No container\' specified in pattern', 'CONTAINER', '<>', false],
       ['tab container mismatches container specified in pattern', 'CONTAINER', '<OTHER_CONTAINER>', false],
       [
+        'tab container mismatches container specified in pattern (uppercase tab, lowercase pattern)',
+        'CONTAINER',
+        '<container>',
+        false,
+      ],
+      [
+        'tab container mismatches container specified in pattern (lowercase tab, uppercase pattern)',
+        'container',
+        '<CONTAINER>',
+        false,
+      ],
+      [
         'tab without container matches container specified in pattern (not \'CONTAINER\' regex group)',
         '',
         '<^(?!CONTAINER$)>',
@@ -452,25 +574,32 @@ describe('utils', () => {
         '<^(?!CONTAINER$)>',
         false,
       ],
+      [
+        'tab container mismatches container specified in pattern (not \'CONTAINER\' regex group,'
+        + ' lowercalse tab, uppercase container)',
+        'container',
+        '<^(?!CONTAINER$)>',
+        true,
+      ],
+      [
+        'tab container mismatches container specified in pattern (not \'CONTAINER\' regex group,'
+        + ' uppercase tab, lowercalse container)',
+        'CONTAINER',
+        '<^(?!container$)>',
+        true,
+      ],
     ];
 
     for (const tc of testCases) {
-      for (const [contTestCaseName, currCont, contInPattern, isContMatch] of containerTestArgs) {
-        for (const isOnlyLoweCase of [true, false]) {
-          const url = isOnlyLoweCase
-            ? tc.url
-            : [...tc.url].map(c => Math.round(Math.random()) === 1 ? c.toUpperCase() : c).join('');
+      for (const [testCaseGroupName, currCont, contInPattern, isContMatch] of containerTestArgs) {
+        const testCaseName = [
+          testCaseGroupName,
+          ...tc.name,
+        ].join(' / ');
 
-          const testCaseName = [
-            isOnlyLoweCase ? 'lower case characters' : 'random case characters',
-            contTestCaseName,
-            ...tc.name,
-          ].join(' / ');
-
-          it(testCaseName, () => expect(
-            utils.matchesSavedMap(url, currCont, { host: `${contInPattern}${tc.matchPattern}` })
-          ).toBe((tc.isUrlMatch && isContMatch)));
-        }
+        it(testCaseName, () => expect(
+          utils.matchesSavedMap(tc.url, currCont, { host: `${contInPattern}${tc.matchPattern}` })
+        ).toBe((tc.isUrlMatch && isContMatch)));
       }
     }
   });
