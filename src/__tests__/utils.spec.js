@@ -542,6 +542,18 @@ describe('utils', () => {
       ['tab without container and container specified in pattern', '', '<CONTAINER>', false],
       ['tab without container and container not specified in pattern', '', '', true],
       ['tab container matches container specified in pattern', 'CONTAINER', '<CONTAINER>', true],
+      [
+        'tab container matches container specified in pattern (trailing whitespaces in tab)',
+        ' CONTAINER ',
+        '<CONTAINER>',
+        true,
+      ],
+      [
+        'tab container matches container specified in pattern (trailing whitespaces in pattern)',
+        'CONTAINER',
+        '< CONTAINER >',
+        true,
+      ],
       ['tab without container and rule \'No container\' specified in pattern', '', '<>', true],
       ['tab with any container and container not specified in pattern', 'CONTAINER', '', true],
       ['tab with any container and rule \'No container\' specified in pattern', 'CONTAINER', '<>', false],

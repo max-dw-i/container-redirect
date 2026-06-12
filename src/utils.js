@@ -9,6 +9,7 @@ export const qsAll = (selector, node) => (node || document).querySelectorAll(sel
 export const ce = (tagName) => document.createElement(tagName);
 
 export const cleanHostInput = (value = '') => value.trim();
+export const cleanContainerName = (value) => value ? value.trim() : value;
 
 const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(@)?(.*)');
 
@@ -87,12 +88,15 @@ function globToRegex(s) {
  * @return {boolean}
  */
 export const matchesSavedMap = (url, currentContainerName, { host }) => {
+  currentContainerName = cleanContainerName(currentContainerName);
+
   const mapHostMatch = host.match(HOST_REGEX);
   if (mapHostMatch === null) {
     console.error(`couldn't parse value '${host}'`);
     return false;
   }
-  const [, mapContainerNameRe, regexFlag, mapUrlPattern] = mapHostMatch;
+  const [, mapContainerNameReRaw, regexFlag, mapUrlPattern] = mapHostMatch;
+  const mapContainerNameRe = cleanContainerName(mapContainerNameReRaw);
 
   const urlO = new window.URL(url);
   let testUrl = normalizedUrl(urlO);
@@ -115,9 +119,9 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
 
   if (!hasUrlMatched) return false;
   if (mapContainerNameRe === undefined) return true;
-  if (mapContainerNameRe.trim().length === 0) return currentContainerName === undefined || currentContainerName.trim().length === 0;
+  if (mapContainerNameRe.length === 0) return currentContainerName === undefined || currentContainerName.length === 0;
   if (currentContainerName === undefined) return false;
-  return (new RegExp(mapContainerNameRe.trim())).test(currentContainerName.trim());
+  return (new RegExp(mapContainerNameRe)).test(currentContainerName);
 };
 
 

@@ -1,7 +1,7 @@
 import ContextualIdentities, {RANDOM_VAL_CONST as RANDOM_CONTAINER_VAL} from '../ContextualIdentity';
 import State from '../State';
 import Storage from '../Storage/HostStorage';
-import {cleanHostInput, MAX_EXTENSION_POPUP_WIDTH, qs, sortMaps} from '../utils';
+import {cleanContainerName, cleanHostInput, MAX_EXTENSION_POPUP_WIDTH, qs, sortMaps} from '../utils';
 import {hideLoader, showLoader} from './loader';
 import {hideToast, showToast} from './toast';
 
@@ -121,9 +121,9 @@ class CSVEditor {
       const hostMapParts = item.split(HOST_MAPS_SPLIT_KEY);
       for (let i = hostMapParts.length; i < 4; i++) hostMapParts.push('');
       const host = cleanHostInput(hostMapParts.slice(0, -3).join(HOST_MAPS_SPLIT_KEY));
-      const containerName = hostMapParts[hostMapParts.length - 3];
-      const containerColor = hostMapParts[hostMapParts.length - 2];
-      const containerIcon = hostMapParts[hostMapParts.length - 1];
+      const containerName = cleanContainerName(hostMapParts[hostMapParts.length - 3]);
+      const containerColor = hostMapParts[hostMapParts.length - 2].trim();
+      const containerIcon = hostMapParts[hostMapParts.length - 1].trim();
       let identity;
 
       if (!containerName) {
@@ -136,21 +136,20 @@ class CSVEditor {
         return;
       }
 
-      const trimmedContainerName = containerName.trim();
-      identity = this.state.identities.find((identity) => identity.name.trim() === trimmedContainerName);
+      identity = this.state.identities.find((identity) => cleanContainerName(identity.name) === containerName);
       if (identity) {
         this.addIdentity(identity, host, priority, maps);
       } else {
         const hostObj = { host, priority };
-        if (trimmedContainerName in missingContainers) {
-          missingContainers[trimmedContainerName].hosts.push(hostObj);
+        if (containerName in missingContainers) {
+          missingContainers[containerName].hosts.push(hostObj);
         } else {
-          missingContainers[trimmedContainerName] = {
+          missingContainers[containerName] = {
             hosts: [hostObj],
             container: {
-              name: trimmedContainerName,
-              color: containerColor.trim() || RANDOM_CONTAINER_VAL,
-              icon: containerIcon.trim() || RANDOM_CONTAINER_VAL,
+              name: containerName,
+              color: containerColor || RANDOM_CONTAINER_VAL,
+              icon: containerIcon || RANDOM_CONTAINER_VAL,
             },
           };
         }
