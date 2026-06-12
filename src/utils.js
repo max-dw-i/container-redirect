@@ -21,24 +21,25 @@ export const sortMaps = (maps) => maps.sort((map1, map2) => {
 });
 
 /**
- * Converts the punycode domain in the URL to Unicode and trims the protocol.
+ * Converts the punycode domain in the URL to Unicode.
  *
  * @param {URL} url
- * @return {string}
+ * @return {URL}
  */
-export const normalizedUrl = (url) => {
-  url.hostname = punycode.toUnicode(url.hostname);
-  return url.toString().replace('https://', '').replace('http://', '');
+export const normalizeUrlPunnycode = (url) => {
+  const urlCopy = new URL(url);
+  urlCopy.hostname = punycode.toUnicode(urlCopy.hostname);
+  return urlCopy;
 };
 
 /**
- * Returns the domain part of the URL converted from punycode to Unicode.
+ * Trims the URL scheme.
  *
- * @param {URL} url
+ * @param {string} url
  * @return {string}
  */
-export const normalizedDomain = (url) => {
-  return punycode.toUnicode(url.hostname);
+export const trimUrlScheme = (url) => {
+  return url.replace('https://', '').replace('http://', '');
 };
 
 /**
@@ -98,8 +99,9 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
   const [, mapContainerNameReRaw, regexFlag, mapUrlPattern] = mapHostMatch;
   const mapContainerNameRe = cleanContainerName(mapContainerNameReRaw);
 
-  const urlO = new window.URL(url);
-  let testUrl = normalizedUrl(urlO);
+  const originalUrl = new window.URL(url);
+  const normalizedUrl = normalizeUrlPunnycode(originalUrl);
+  let testUrl = normalizedUrl.toString();
   let hasUrlMatched = false;
   if (regexFlag) {
     try {
@@ -108,11 +110,12 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
       console.error('couldn\'t test regex', mapUrlPattern, e);
     }
   } else {
+    testUrl = trimUrlScheme(testUrl);
     let reStr = globToRegex(mapUrlPattern);
     reStr = `^${reStr}$`;
     const firstSlashIndex = mapUrlPattern.trimEnd('/').indexOf('/');
     if (firstSlashIndex === -1) {
-      testUrl = normalizedDomain(urlO);
+      testUrl = normalizedUrl.hostname;
     }
     hasUrlMatched = (new RegExp(reStr)).test(testUrl);
   }

@@ -37,11 +37,17 @@ The glob meta-characters `*`, `?` are converted into the regex characters `.*`, 
 
 ## Regex pattern
 
-Regular expressions should be used when using of glob patterns won't work. A few examples:
+Regular expressions is the most versatile way to make a 'URL match' rule. No URL processing happens before pattern matching when this pattern type is chosen so you work with 'raw' URLs.
+
+A few examples:
 
 1. Search for a pattern anywhere in the URL. For example, pattern `@duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
 
-2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@.*?/.*duckduckgo\\.com.*` and URL `https://google.com/?q=duckduckgo.com`.
+2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@^https?://\\S+/.*duckduckgo\.com` and URL `https://google.com/?q=duckduckgo.com`.
+
+3. Search for a pattern in the domain only. For example, pattern `@^https?://[^/]*duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
+
+4. Search for a specific domain taking into account the scheme. For example, pattern `@^http://duckduckgo\.com/` and URL `http://duckduckgo.com/?q=search+me+baby`.
 
 
 ## Matching with existing container name (settings option 'Match current container name'):
@@ -109,6 +115,12 @@ To prevent some [issues](https://github.com/GodKratos/temporary-containers/issue
 - The same applies to container names. In Firefox, the container names like `REDDIT`, `reddit`, `Reddit`, `ReDdIt` are all distinct but our container matching logic was not case-sensitive. Therefore, for example, a CSV rule `www.reddit.com, reddit` would match any of the previously mentioned container. From now on, if you have a container named `REDDIT` (and not `reddit`), the rule will not trigger.
 
 *Action required*. Verify your CSV rules. Ensure container names in your rules match the exact casing of your Firefox containers.
+
+2. **Regex pattern**
+
+- In the previous versions of the extension, we automatically trimmed the URL scheme (`https://` and `http://`). Consequently, a pattern like `@^www.reddit.com` would match both URLs `http://www.reddit.com` and `https://www.reddit.com`. However, users may want to define different rules for different schemes. Therefore, we do not do any URL processing prior to pattern matching.
+
+*Action required*. If your regex patterns are anchored to the beginning of the line (starts with `@^`), you must now include the scheme. To migrate quickly, replace `@^` with `@^https?://` in your existing regex patterns.
 
 
 # Development
