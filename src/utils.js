@@ -8,10 +8,21 @@ export const qs = (selector, node) => (node || document).querySelector(selector)
 export const qsAll = (selector, node) => (node || document).querySelectorAll(selector);
 export const ce = (tagName) => document.createElement(tagName);
 
+const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(i?@)?(.*)');
+
+function parseMapHost(val) {
+  const match = val.match(HOST_REGEX);
+  if (match === null) return {};
+  const [, containerNameRe, regexFlag, urlPattern] = match;
+  return {
+    containerNameRe,
+    regexFlag,
+    urlPattern,
+  };
+}
+
 export const cleanHostInput = (value = '') => value.trim();
 export const cleanContainerName = (value) => value ? value.trim() : value;
-
-const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(i?@)?(.*)');
 
 export const sortMaps = (maps) => maps.sort((map1, map2) => {
   const pr1 = map1.priority;
@@ -91,30 +102,29 @@ function globToRegex(s) {
 export const matchesSavedMap = (url, currentContainerName, { host }) => {
   currentContainerName = cleanContainerName(currentContainerName);
 
-  const mapHostMatch = host.match(HOST_REGEX);
-  if (mapHostMatch === null) {
+  const mapHost = parseMapHost(host);
+  if (Object.keys(mapHost).length === 0) {
     console.error(`couldn't parse value '${host}'`);
     return false;
   }
-  const [, mapContainerNameReRaw, regexFlag, mapUrlPattern] = mapHostMatch;
-  const mapContainerNameRe = cleanContainerName(mapContainerNameReRaw);
+  const mapContainerNameRe = cleanContainerName(mapHost.containerNameRe);
 
   const originalUrl = new window.URL(url);
   const normalizedUrl = normalizeUrlPunnycode(originalUrl);
   let testUrl = normalizedUrl.toString();
   let hasUrlMatched = false;
-  if (regexFlag) {
-    const caseInsensitive = regexFlag[0] === 'i' ? 'i' : undefined;
+  if (mapHost.regexFlag) {
+    const caseInsensitive = mapHost.regexFlag[0] === 'i' ? 'i' : undefined;
     try {
-      hasUrlMatched = (new RegExp(mapUrlPattern, caseInsensitive)).test(testUrl);
+      hasUrlMatched = (new RegExp(mapHost.urlPattern, caseInsensitive)).test(testUrl);
     } catch (e) {
-      console.error('couldn\'t test regex', mapUrlPattern, e);
+      console.error('couldn\'t test regex', mapHost.urlPattern, e);
     }
   } else {
     testUrl = trimUrlScheme(testUrl);
-    let reStr = globToRegex(mapUrlPattern);
+    let reStr = globToRegex(mapHost.urlPattern);
     reStr = `^${reStr}$`;
-    const firstSlashIndex = mapUrlPattern.trimEnd('/').indexOf('/');
+    const firstSlashIndex = mapHost.urlPattern.trimEnd('/').indexOf('/');
     if (firstSlashIndex === -1) {
       testUrl = normalizedUrl.hostname;
     }
