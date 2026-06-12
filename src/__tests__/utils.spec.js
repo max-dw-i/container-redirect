@@ -331,6 +331,16 @@ describe('utils', () => {
       },
       {
         name: [
+          'regex \'domain only\' pattern with \'i\' flag',
+          '\'domain only\' URL',
+          'pattern matches URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/',
+        isUrlMatch: true,
+      },
+      {
+        name: [
           'regex \'domain only\' pattern',
           '\'domain only\' URL',
           'pattern does not match URL',
@@ -358,6 +368,16 @@ describe('utils', () => {
         url: 'https://duckduckgo.com/?q=search+me+baby',
         matchPattern: '@^https://DUCKDUCKGO\\.COM/',
         isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'domain only\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/',
+        isUrlMatch: true,
       },
       {
         name: [
@@ -401,6 +421,16 @@ describe('utils', () => {
       },
       {
         name: [
+          'regex \'path\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity, lowecase path, uppercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
+        isUrlMatch: true,
+      },
+      {
+        name: [
           'regex \'path\' pattern',
           '\'path\' URL',
           'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
@@ -408,6 +438,16 @@ describe('utils', () => {
         url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
         matchPattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
         isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'path\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity, uppercase path, lowercase pattern)',
+        ],
+        url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
+        matchPattern: 'i@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
+        isUrlMatch: true,
       },
       {
         name: [
@@ -441,6 +481,16 @@ describe('utils', () => {
       },
       {
         name: [
+          'regex \'anywhere in domain\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'i@^https://[^/]*DUCKDUCKGO',
+        isUrlMatch: true,
+      },
+      {
+        name: [
           'regex \'anywhere in domain\' pattern',
           '\'path\' URL',
           'pattern does not match URL',
@@ -471,6 +521,16 @@ describe('utils', () => {
       },
       {
         name: [
+          'regex \'anywhere in URL path\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity, lowercase path, uppercase pattern)',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: 'i@^https://\\S+/.*DUCKDUCKGO\\.COM',
+        isUrlMatch: true,
+      },
+      {
+        name: [
           'regex \'anywhere in URL path\' pattern',
           '\'path\' URL',
           'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
@@ -478,6 +538,16 @@ describe('utils', () => {
         url: 'https://google.com/?q=DUCKDUCKGO.COM',
         matchPattern: '@^https://\\S+/.*duckduckgo\\.com',
         isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL path\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity, uppercase path, lowercase pattern)',
+        ],
+        url: 'https://google.com/?q=DUCKDUCKGO.COM',
+        matchPattern: 'i@^https://\\S+/.*duckduckgo\\.com',
+        isUrlMatch: true,
       },
       {
         name: [
@@ -518,6 +588,16 @@ describe('utils', () => {
         url: 'https://duckduckgo.com/?q=search+me+baby',
         matchPattern: '@DUCKDUCKGO',
         isUrlMatch: false,
+      },
+      {
+        name: [
+          'regex \'anywhere in URL\' pattern with \'i\' flag',
+          '\'path\' URL',
+          'pattern matches URL (case-sensitivity)',
+        ],
+        url: 'https://duckduckgo.com/?q=search+me+baby',
+        matchPattern: 'i@DUCKDUCKGO',
+        isUrlMatch: true,
       },
       {
         name: [

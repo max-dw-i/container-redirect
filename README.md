@@ -39,15 +39,19 @@ The glob meta-characters `*`, `?` are converted into the regex characters `.*`, 
 
 Regular expressions is the most versatile way to make a 'URL match' rule. No URL processing happens before pattern matching when this pattern type is chosen so you work with 'raw' URLs.
 
+For case-insensitive search, use flag `i` (see example 3).
+
 A few examples:
 
 1. Search for a pattern anywhere in the URL. For example, pattern `@duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
 
-2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@^https?://\\S+/.*duckduckgo\.com` and URL `https://google.com/?q=duckduckgo.com`.
+2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@^https?://\S+/.*duckduckgo\.com` and URL `https://google.com/?q=duckduckgo.com`.
 
-3. Search for a pattern in the domain only. For example, pattern `@^https?://[^/]*duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
+3. Search for a pattern in the URL's path (any casing) but not in the domain. For example, pattern `i@^https?://\S+/.*duckduckgo\.com` will match URLs `https://google.com/?q=duckduckgo.com` and `https://google.com/?q=DUCKDUCKGO.com`.
 
-4. Search for a specific domain taking into account the scheme. For example, pattern `@^http://duckduckgo\.com/` and URL `http://duckduckgo.com/?q=search+me+baby`.
+4. Search for a pattern in the domain only. For example, pattern `@^https?://[^/]*duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
+
+5. Search for a specific domain taking into account the scheme. For example, pattern `@^http://duckduckgo\.com/` and URL `http://duckduckgo.com/?q=search+me+baby`.
 
 
 ## Matching with existing container name (settings option 'Match current container name'):
@@ -110,7 +114,7 @@ To prevent some [issues](https://github.com/GodKratos/temporary-containers/issue
 
 - In the previous versions of the extension, patterns did not take into account the case of URLs and container names. For example, if you had pattern `@www.reddit.com/r/Cars`, it would match all of the following URLs: `https://www.reddit.com/r/CARS`,  `https://www.reddit.com/r/cars`,  `https://www.reddit.com/r/Cars`,  `https://www.reddit.com/r/CaRs`, `https://www.reddit.com/r/cArS`, and so on. While this was not a problem in most cases, technically, these are all different URLs (see RFC 3986). From now on, the pattern will only match the URL with `Cars` in the path, not any other case combination.
 
-*Action required*. Verify your host/URL patterns. If you need to match URLs with capital letters, please update your patterns to reflect the correct casing.
+*Action required*. Verify your host/URL patterns. If you need to match URLs with capital letters, please update your patterns to reflect the correct casing. You can migrate your regex patterns quickly by adding the `i` flag (replace `@` with `i@`).
 
 - The same applies to container names. In Firefox, the container names like `REDDIT`, `reddit`, `Reddit`, `ReDdIt` are all distinct but our container matching logic was not case-sensitive. Therefore, for example, a CSV rule `www.reddit.com, reddit` would match any of the previously mentioned container. From now on, if you have a container named `REDDIT` (and not `reddit`), the rule will not trigger.
 

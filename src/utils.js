@@ -11,7 +11,7 @@ export const ce = (tagName) => document.createElement(tagName);
 export const cleanHostInput = (value = '') => value.trim();
 export const cleanContainerName = (value) => value ? value.trim() : value;
 
-const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(@)?(.*)');
+const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(i?@)?(.*)');
 
 export const sortMaps = (maps) => maps.sort((map1, map2) => {
   const pr1 = map1.priority;
@@ -104,8 +104,9 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
   let testUrl = normalizedUrl.toString();
   let hasUrlMatched = false;
   if (regexFlag) {
+    const caseInsensitive = regexFlag[0] === 'i' ? 'i' : undefined;
     try {
-      hasUrlMatched = (new RegExp(mapUrlPattern)).test(testUrl);
+      hasUrlMatched = (new RegExp(mapUrlPattern, caseInsensitive)).test(testUrl);
     } catch (e) {
       console.error('couldn\'t test regex', mapUrlPattern, e);
     }
