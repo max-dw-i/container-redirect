@@ -98,6 +98,18 @@ If the container defined in the rule does not exist, it will be created. If the 
 To prevent some [issues](https://github.com/GodKratos/temporary-containers/issues/38), `Temporary Containers` and `Temporary Containers Plus` are allowed to request containers' patterns.
 
 
+# Migrating to `3.13.x`
+
+1. **Case-sensitive host/URL patterns and container names**
+
+- In the previous versions of the extension, patterns did not take into account the case of URLs and container names. For example, if you had pattern `@www.reddit.com/r/Cars`, it would match all of the following URLs: `https://www.reddit.com/r/CARS`,  `https://www.reddit.com/r/cars`,  `https://www.reddit.com/r/Cars`,  `https://www.reddit.com/r/CaRs`, `https://www.reddit.com/r/cArS`, and so on. While this was not a problem in most cases, technically, these are all different URLs (see RFC 3986). From now on, the pattern will only match the URL with `Cars` in the path, not any other case combination.
+
+*Action required*. Verify your host/URL patterns. If you need to match URLs with capital letters, please update your patterns to reflect the correct casing.
+
+- The same applies to container names. In Firefox, the container names like `REDDIT`, `reddit`, `Reddit`, `ReDdIt` are all distinct but our container matching logic was not case-sensitive. Therefore, for example, a CSV rule `www.reddit.com, reddit` would match any of the previously mentioned container. From now on, if you have a container named `REDDIT` (and not `reddit`), the rule will not trigger.
+
+*Action required*. Verify your CSV rules. Ensure container names in your rules match the exact casing of your Firefox containers.
+
 
 # Development
 
