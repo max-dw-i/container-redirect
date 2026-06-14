@@ -83,13 +83,7 @@ function escapeRegExp(s) {
   return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-/**
- * Converts a glob matching pattern to a regular expression.
- *
- * @param {string} s
- * @return {string}
- */
-function globToRegex(s) {
+function domainGlobToRegex(s) {
   const escapedChars = [];
   let i = 0;
   while (i < s.length) {
@@ -97,7 +91,24 @@ function globToRegex(s) {
       escapedChars.push(s.slice(i, i + 2));
       i = i + 2;
     } else {
-      if (s[i] === '?') escapedChars.push('.?');
+      if (s[i] === '?') escapedChars.push('[^.]');
+      else if (s[i] === '*') escapedChars.push('.*');
+      else escapedChars.push(escapeRegExp(s[i]));
+      i++;
+    }
+  }
+  return escapedChars.join('');
+}
+
+function pathGlobToRegex(s) {
+  const escapedChars = [];
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] === '\\' && (['?', '*'].includes(s[i + 1]))) {
+      escapedChars.push(s.slice(i, i + 2));
+      i = i + 2;
+    } else {
+      if (s[i] === '?') escapedChars.push('[^/]');
       else if (s[i] === '*') escapedChars.push('.*');
       else escapedChars.push(escapeRegExp(s[i]));
       i++;
@@ -140,18 +151,23 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
       console.error('couldn\'t test regex', mapHost.urlPattern, e);
     }
   } else {
-    let re = `^${globToRegex(mapHost.urlPattern)}$`;
+    let re;
     // The URL scheme is trimmed at this point so if there's a '/',
     // it's a start of the URL's path
     const firstSlashIndex = mapHost.urlPattern.indexOf('/');
     if (firstSlashIndex === -1) {
       // It's a domain-only glob pattern
+      re = `^${domainGlobToRegex(mapHost.urlPattern)}$`;
       testUrl = normalizedUrl.hostname;
     } else if (firstSlashIndex === 0) {
       // It's a path-only glob pattern
+      re = `^${pathGlobToRegex(mapHost.urlPattern)}$`;
       testUrl = normalizedUrl.pathname + normalizedUrl.search;
     } else {
       // It's a whole-URL glob pattern
+      const domainPattern = mapHost.urlPattern.slice(0, firstSlashIndex);
+      const pathPattern = mapHost.urlPattern.slice(firstSlashIndex);
+      re = `^${domainGlobToRegex(domainPattern)}${pathGlobToRegex(pathPattern)}$`;
       testUrl = trimUrlScheme(testUrl);
     }
     // let reStr = globToRegex(mapHost.urlPattern);

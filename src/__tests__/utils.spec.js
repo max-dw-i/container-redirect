@@ -261,6 +261,66 @@ describe('utils', () => {
       },
       {
         name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'duckd?ckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'domain only\' URL',
+          'pattern does not match domain in URL (\'.\' in same position as \'?\')',
+        ],
+        url: 'https://duckd.ckgo.com/',
+        matchPattern: 'duckd?ckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'path\' URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search',
+        matchPattern: '/\\?q=s?arch',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'path\' URL',
+          'pattern does not match domain in URL (\'/\' in same position as \'?\')',
+        ],
+        url: 'https://duckduckgo.com/?q=s/arch',
+        matchPattern: '/\\?q=s?arch',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          'whole URL',
+          'pattern matches domain in URL',
+        ],
+        url: 'https://duckduckgo.com/?q=search',
+        matchPattern: 'duckd?ckgo.com/\\?q=s?arch',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          'whole URL',
+          'pattern does not match domain in URL (\'.\' and \'/\' in same position as \'?\')',
+        ],
+        url: 'https://duckd.ckgo.com/?q=s/arch',
+        matchPattern: 'duckd?ckgo.com/\\?q=s?arch',
+        isUrlMatch: false,
+      },
+      {
+        name: [
           'non-regex glob \'domain only\' pattern',
           '\'domain only\' URL',
           'pattern matches domain in URL',
