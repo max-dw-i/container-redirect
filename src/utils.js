@@ -2,7 +2,10 @@ import punycode from 'punycode';
 
 export const MAX_EXTENSION_POPUP_WIDTH = 800;  // px, found in google
 
-export const PREFIX_REGEX_FLAG = '@';
+const URL_SCHEMES = [
+  'http://',
+  'https://',
+];
 
 export const qs = (selector, node) => (node || document).querySelector(selector);
 export const qsAll = (selector, node) => (node || document).querySelectorAll(selector);
@@ -21,7 +24,21 @@ function parseMapHost(val) {
   };
 }
 
-export const cleanHostInput = (value = '') => value.trim();
+export function cleanHostInput(value = '') {
+  if (value === '') return value;
+
+  const parsedHost = parseMapHost(value.trim());
+  if (!parsedHost.regexFlag) {
+    // Trim the scheme if it's a glob pattern
+    parsedHost.urlPattern = trimUrlScheme(parsedHost.urlPattern);
+  }
+
+  const cleanParts = [];
+  if (parsedHost.containerNameRe !== undefined) cleanParts.push(`<${parsedHost.containerNameRe}>`);
+  if (parsedHost.regexFlag !== undefined) cleanParts.push(parsedHost.regexFlag);
+  if (parsedHost.urlPattern !== undefined) cleanParts.push(parsedHost.urlPattern);
+  return cleanParts.join('');
+}
 export const cleanContainerName = (value) => value ? value.trim() : value;
 
 export const sortMaps = (maps) => maps.sort((map1, map2) => {
@@ -50,7 +67,9 @@ export const normalizeUrlPunnycode = (url) => {
  * @return {string}
  */
 export const trimUrlScheme = (url) => {
-  return url.replace('https://', '').replace('http://', '');
+  let trimmed = url;
+  for (const scheme of URL_SCHEMES) trimmed = trimmed.replace(scheme, '');
+  return trimmed;
 };
 
 /**
@@ -121,14 +140,24 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
       console.error('couldn\'t test regex', mapHost.urlPattern, e);
     }
   } else {
-    testUrl = trimUrlScheme(testUrl);
-    let reStr = globToRegex(mapHost.urlPattern);
-    reStr = `^${reStr}$`;
-    const firstSlashIndex = mapHost.urlPattern.trimEnd('/').indexOf('/');
+    let re = `^${globToRegex(mapHost.urlPattern)}$`;
+    // The URL scheme is trimmed at this point so if there's a '/',
+    // it's a start of the URL's path
+    const firstSlashIndex = mapHost.urlPattern.indexOf('/');
     if (firstSlashIndex === -1) {
+      // It's a domain-only glob pattern
       testUrl = normalizedUrl.hostname;
+    } else if (firstSlashIndex === 0) {
+      // It's a path-only glob pattern
+      testUrl = normalizedUrl.pathname + normalizedUrl.search;
+    } else {
+      // It's a whole-URL glob pattern
+      testUrl = trimUrlScheme(testUrl);
     }
-    hasUrlMatched = (new RegExp(reStr)).test(testUrl);
+    // let reStr = globToRegex(mapHost.urlPattern);
+    // reStr = `^${reStr}$`;
+    // hasUrlMatched = (new RegExp(reStr)).test(testUrl);
+    hasUrlMatched = (new RegExp(re)).test(testUrl);
   }
 
   if (!hasUrlMatched) return false;

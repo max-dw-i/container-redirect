@@ -131,6 +131,136 @@ describe('utils', () => {
       },
       {
         name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern matches \'path\' part in URL but not \'domain\' part',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '/\\?q=duckduckgo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern matches \'path\' part in URL except trailing slash',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com/',
+        matchPattern: '/\\?q=duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern matches beginning of \'path\' part in URL but but not the whole thing',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com&ia=web',
+        matchPattern: '/\\?q=duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern matches \'domain\' part in URL but not \'path\' part',
+        ],
+        url: 'https://google.com/duckduckgo.com',
+        matchPattern: '/google.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern does not match path in URL (case-sensitivity)',
+        ],
+        url: 'https://google.com/?q=duckduckgo.com',
+        matchPattern: '/\\?q=DUCKDUCKGO.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'pattern does not match any part of URL',
+        ],
+        url: 'https://google.com/?q=yahoo.com',
+        matchPattern: '/\\?q=duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'empty path pattern matches URL',
+        ],
+        url: 'https://google.com/',
+        matchPattern: '/',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          '\'path\' URL',
+          'empty path pattern does not match URL',
+        ],
+        url: 'https://google.com/?q=yahoo.com',
+        matchPattern: '/',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          'whole URL',
+          'pattern matches URL with \'http\' scheme',
+        ],
+        url: 'http://google.com/?q=yahoo.com',
+        matchPattern: 'google.com/\\?q=yahoo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          'whole URL',
+          'pattern matches URL with \'https\' scheme',
+        ],
+        url: 'https://google.com/?q=yahoo.com',
+        matchPattern: 'google.com/\\?q=yahoo.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          'whole URL',
+          'pattern does not match URL with trailing slash',
+        ],
+        url: 'https://google.com/?q=yahoo.com/',
+        matchPattern: 'google.com/\\?q=yahoo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          'whole URL',
+          'pattern matches the beginning of URL but not whole thing',
+        ],
+        url: 'https://google.com/?q=yahoo.com&ia=web',
+        matchPattern: 'google.com/\\?q=yahoo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'path only\' pattern',
+          'whole URL',
+          'pattern matches \'path\' part of URL but not whole URL',
+        ],
+        url: 'https://google.com/google.com/yahoo.com',
+        matchPattern: 'google.com/yahoo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
           'non-regex glob \'domain only\' pattern',
           '\'domain only\' URL',
           'pattern matches domain in URL',

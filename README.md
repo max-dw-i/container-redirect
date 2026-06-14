@@ -16,6 +16,22 @@ Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-
 
 # Usage
 
+## Glob pattern (simplified)
+
+Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.
+
+Supported glob characters are `*`, `**`, `?`.
+
+Search is case-sensitive.
+
+### No glob characters
+
+1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example, the pattern `duckduckgo.com` will match the URLs `https://duckduckgo.com/` and `https://duckduckgo.com/?q=search+me+baby`, but won't match `https://google.com/` and `https://google.com/?q=duckduckgo.com`.
+
+2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). For example, the pattern `/\?q=search-me-baby` (we escape `?` because it's a glob character, see next chapter) will match the URLs `https://google.com/?q=search-me-baby` and `https://duckduckgo.com/?q=search-me-baby`, but won't match `https://duckduckgo.com/?q=do-not-search-me-baby`, `https://duckduckgo.com/?q=search-me-baby&ia=web` and `https://duckduckgo.com/?q=search-me-baby/` (notice the trailing `/` at the end).
+
+3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example, the pattern `duckduckgo.com/\?q=search-me-baby` will match only the URLs `http://duckduckgo.com/?q=search-me-baby`, `https://duckduckgo.com/?q=search-me-baby` and nothing else.
+
 ## Glob pattern
 
 Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.
