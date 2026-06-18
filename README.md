@@ -156,6 +156,53 @@ Character `*` matches any number of characters, including zero characters (there
         👍 https://good.gogle.com/gearch
         ❌ https://google.com/searching
 
+### Glob pattern `**`
+
+Character `**` matches any number of domain levels and path segments, including zero.
+
+If `**` is in a domain or path segment, there cannot be any other characters in the same segment. For example, these are valid patterns: `**.google.com`, `jobs.**.com`, `id.**`, `/**/path`, `/more/**/path`, `/path/**`, and these are invalid patterns: `a**.google.com`, `jobs.b**c.com`, `id.**d`, `/a**/path`, `/more/b**c/path`, `/path/**d`.
+
+1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `**` in the domain part of the URL matches any number of domain levels (including zero). For example,
+
+        Pattern: **.google.com
+        URLs:
+        👍 https://google.com/
+        👍 https://evil.google.com/
+        👍 https://super.evil.google.com/
+
+        Pattern: jobs.**
+        URLs:
+        👍 https://jobs/
+        👍 https://jobs.com/
+        👍 https://jobs.company.com/
+
+        Pattern: jobs.**.com
+        URLs:
+        👍 https://jobs.com/
+        👍 https://jobs.companyone.com/
+        👍 https://jobs.other.company.com/
+
+2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `**` in the path part of the URL matches any any number of path segments (including zero). For example,
+
+        Pattern: /evil/**
+        URLs:
+        👍 https://google.com/evil/
+        👍 https://google.com/evil/villain
+        👍 https://duckduckgo.com/evil/not/good/
+
+        Pattern: /evil/**/company
+        URLs:
+        👍 https://google.com/evil/company
+        👍 https://google.com/evil/very/company
+        👍 https://google.com/evil/very/very/company
+
+3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+
+        Pattern: **.google.com/majestic/**
+        URLs:
+        👍 http://google.com/majestic/
+        👍 https://good.google.com/majestic/company
+
 ## Glob pattern
 
 Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.

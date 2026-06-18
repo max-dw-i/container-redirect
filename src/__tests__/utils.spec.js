@@ -619,6 +619,176 @@ describe('utils', () => {
         matchPattern: '*.go*gle.com/*earch',
         isUrlMatch: true,
       },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern start)',
+        ],
+        url: 'https://google.com/',
+        matchPattern: '**.google.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern start)',
+        ],
+        url: 'https://evil.google.com/',
+        matchPattern: '**.google.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern start)',
+        ],
+        url: 'https://super.evil.google.com/',
+        matchPattern: '**.google.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern end)',
+        ],
+        url: 'https://jobs/',
+        matchPattern: 'jobs.**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern end)',
+        ],
+        url: 'https://jobs.com/',
+        matchPattern: 'jobs.**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern end)',
+        ],
+        url: 'https://jobs.company.com/',
+        matchPattern: 'jobs.**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://jobs.com/',
+        matchPattern: 'jobs.**.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://jobs.companyone.com/',
+        matchPattern: 'jobs.**.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'**\'',
+          '\'domain only\' URL',
+          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://jobs.other.company.com/',
+        matchPattern: 'jobs.**.com',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if no segment in place of \'**\' (pattern end)',
+        ],
+        url: 'https://google.com/evil/',
+        matchPattern: '/evil/**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if 1 segment in place of \'**\' (pattern end)',
+        ],
+        url: 'https://google.com/evil/villain',
+        matchPattern: '/evil/**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if >1 segments in place of \'**\' (pattern end)',
+        ],
+        url: 'https://duckduckgo.com/evil/not/good/',
+        matchPattern: '/evil/**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if no segment in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://google.com/evil/company',
+        matchPattern: '/evil/**/company',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if 1 segment in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://google.com/evil/very/company',
+        matchPattern: '/evil/**/company',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'path only\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches path in URL if >1 segments in place of \'**\' (pattern middle)',
+        ],
+        url: 'https://google.com/evil/very/very/company',
+        matchPattern: '/evil/**/company',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'whole URL\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches whole URL (1)',
+        ],
+        url: 'http://google.com/majestic/',
+        matchPattern: '**.google.com/majestic/**',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'whole URL\' pattern with \'**\'',
+          '\'path\' URL',
+          'pattern matches whole URL (2)',
+        ],
+        url: 'https://good.google.com/majestic/company',
+        matchPattern: '**.google.com/majestic/**',
+        isUrlMatch: true,
+      },
       // {
       //   name: [
       //     'non-regex glob \'domain only\' pattern',

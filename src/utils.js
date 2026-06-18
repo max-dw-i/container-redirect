@@ -31,7 +31,16 @@ export function cleanHostInput(value = '') {
   if (!parsedHost.regexFlag) {
     // Trim the scheme if it's a glob pattern
     parsedHost.urlPattern = trimUrlScheme(parsedHost.urlPattern);
+    // Collapse glob '**'
+    parsedHost.urlPattern = parsedHost.urlPattern.replace(/\*\*(?:(?:\.|\/)\*\*)*/, '**');
+    // Trim '**' if it's the whole domain part (to make the pattern 'path-only')
+    parsedHost.urlPattern = parsedHost.urlPattern.replace(/^\*\*\//, '/');
+    // Trim '**' if it's the whole path part (to make the pattern 'domain-only')
+    parsedHost.urlPattern = parsedHost.urlPattern.replace(/^([^/]+)\/\*\*$/, '$1');
   }
+
+  // Patterns like 'a**.google.com', 'jobs.b**c.com', 'id.**d', `/a**/path`, `/more/b**c/path`, `/path/**d` are invalid
+  if (/[^/.]\*\*|\*\*[^/.]/.test(value)) return '';
 
   const cleanParts = [];
   if (parsedHost.containerNameRe !== undefined) cleanParts.push(`<${parsedHost.containerNameRe}>`);
@@ -92,6 +101,19 @@ function domainGlobToRegex(s) {
       escapedChars.push('[^.]');
       i++;
     }
+    // '**' glob character
+    else if (i === s.length - 3 && s.slice(i, i + 3) === '.**') {
+      escapedChars.push('(?:\\.[^.]+)*');
+      i = i + 3;
+    }
+    else if (i === 0 && s.slice(i, i + 3) === '**.') {
+      escapedChars.push('(?:[^.]+\\.)*');
+      i = i + 3;
+    }
+    else if (s.slice(i, i + 4) === '.**.') {
+      escapedChars.push('\\.(?:[^.]+\\.)*');
+      i = i + 4;
+    }
     // '*' glob character
     else if (s[i] === '*') {
       escapedChars.push('[^.]*');
@@ -118,6 +140,15 @@ function pathGlobToRegex(s) {
       if (s[i] === '?') {
         escapedChars.push('[^/]');
         i++;
+      }
+      // '**' glob character
+      else if (i === s.length - 3 && s.slice(i, i + 3) === '/**') {
+        escapedChars.push('\\/.*');
+        i = i + 3;
+      }
+      else if (s.slice(i, i + 4) === '/**/') {
+        escapedChars.push('\\/(?:[^/]+\\/)*');
+        i = i + 4;
       }
       // '*' glob character
       else if (s[i] === '*') {
