@@ -26,19 +26,62 @@ Supported glob characters are `*`, `**`, `?`.
 
 Search is case-sensitive.
 
-1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example, the pattern `duckduckgo.com` will match the URLs `https://duckduckgo.com/` and `https://duckduckgo.com/?q=search+me+baby`, but won't match `https://google.com/` and `https://google.com/?q=duckduckgo.com`.
+1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example,
 
-2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). For example, the pattern `/\?q=search-me-baby` (we escape `?` because it's a glob character, see next chapter) will match the URLs `https://google.com/?q=search-me-baby` and `https://duckduckgo.com/?q=search-me-baby`, but won't match `https://duckduckgo.com/?q=do-not-search-me-baby`, `https://duckduckgo.com/?q=search-me-baby&ia=web` and `https://duckduckgo.com/?q=search-me-baby/` (notice the trailing `/` at the end).
+        Pattern: duckduckgo.com
+        URLs:
+        👍 https://duckduckgo.com/
+        👍 https://duckduckgo.com/?q=search+me+baby
+        ❌ https://google.com/
+        ❌ https://google.com/?q=duckduckgo.com
 
-3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example, the pattern `duckduckgo.com/\?q=search-me-baby` will match only the URLs `http://duckduckgo.com/?q=search-me-baby`, `https://duckduckgo.com/?q=search-me-baby` and nothing else.
+2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). For example,
+
+        Pattern: /\?q=search-me-baby (we escape `?` because it's a glob character, see next chapter)
+        URLs:
+        👍 https://google.com/?q=search-me-baby
+        👍 https://duckduckgo.com/?q=search-me-baby
+        ❌ https://duckduckgo.com/?q=do-not-search-me-baby
+        ❌ https://duckduckgo.com/?q=search-me-baby&ia=web
+        ❌ https://duckduckgo.com/?q=search-me-baby/ (notice the trailing `/` at the end)
+
+3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+
+        Pattern: duckduckgo.com/\?q=search-me-baby
+        URLs:
+        👍 http://duckduckgo.com/?q=search-me-baby
+        👍 https://duckduckgo.com/?q=search-me-baby
+        ❌ Any other URL
 
 ### Glob pattern `?`
 
 Character `?` matches exactly one character (except separators).
 
-1. If the character `?` is in the domain part of the URL, it matches any character except `.`. For example, the pattern `go?gle.com` will match the URLs `https://google.com/`, `https://gobgle.com/`, `https://go9gle.com/`, etc. but it will not match `https://go.gle.com/`.
+1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `?` in the domain part of the URL matches any character except `.` (because it's a path separator here). For example,
 
-2. If the character `?` is in the path part of the URL, it matches any character except `/`. For example, the pattern `/p?th` will match the URLs `https://google.com/path`, `https://boogle.com/poth`, `https://9oogle.com/p3th`, etc. but it will not match `https://google.com/p/th`.
+        Pattern: go?gle.com
+        URLs:
+        👍 https://google.com/
+        👍 https://gobgle.com/
+        👍 https://go9gle.com/
+        ❌ https://go.gle.com/
+
+2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `?` in the path part of the URL matches any character except `/` (because it's a path separator here). For example,
+
+        Pattern: /p?th
+        URLs:
+        👍 https://google.com/path
+        👍 https://boogle.com/poth
+        👍 https://9oogle.com/p3th
+        ❌ https://google.com/p/th
+
+3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+
+        Pattern: duckd?ckgo.com/\?q=search-me-bab?
+        URLs:
+        👍 http://duckduckgo.com/?q=search-me-baby
+        👍 https://duckdockgo.com/?q=search-me-baba
+        ❌ https://duckdckgo.com/?q=search-me-baby
 
 ## Glob pattern
 
