@@ -163,7 +163,7 @@ describe('HostStorage', () => {
         enabled: true,
       });
     });
-    return HostStorage.get('http://test.kinte.sh/here/there').then((result) => {
+    return HostStorage.get('http://test.kinte.sh/there').then((result) => {
       expect(result).toEqual({
         host: '*.kinte.sh/*',
         priority: 5,

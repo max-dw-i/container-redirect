@@ -83,6 +83,79 @@ Character `?` matches exactly one character (except separators).
         👍 https://duckdockgo.com/?q=search-me-baba
         ❌ https://duckdckgo.com/?q=search-me-baby
 
+### Glob pattern `*`
+
+Character `*` matches any number of characters, including zero characters (there are some exceptions, see the examples below), but does not cross (or includes) path separators.
+
+1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `*` in the domain part of the URL matches any character (or none) except `.` (because it's a path separator here). For example,
+
+        Pattern: go*gle.com
+        URLs:
+        👍 https://gogle.com/
+        👍 https://google.com/
+        👍 https://gonoogle.com/
+        ❌ https://go.gle.com/
+        ❌ https://evil.google.com/
+
+        Pattern: *.google.com
+        URLs:
+        👍 https://evil.google.com/
+        👍 https://bad.google.com/
+        ❌ https://google.com/ (`.google.com` is invalid and `*` cannot cross path separator)
+        ❌ https://bad.evil.google.com/ (includes a path separator)
+
+        Pattern: google.*
+        URLs:
+        👍 https://google.com/
+        👍 https://google.org/
+        ❌ https://google/ (`google.` is invalid and `*` cannot cross path separator)
+        ❌ https://google.evil.com/ (includes a path separator)
+
+        Pattern: *
+        URLs:
+        👍 https://localhost/
+        👍 https://myhostnamefromhostsfile/
+        ❌ https://google.com/ (includes a path separator)
+
+        Pattern: jobs.*.com
+        URLs:
+        👍 https://jobs.companyone.com/
+        👍 https://jobs.someothercompany.com/
+        ❌ https://jobs.com/ (`*` would cross path separators)
+        ❌ https://jobs.third.company.com/ (includes a path separator)
+
+2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `*` in the path part of the URL matches any character (or none) except `/` (because it's a path separator here). For example,
+
+        Pattern: /j*bs/
+        URLs:
+        👍 https://google.com/jbs/
+        👍 https://google.com/jobs/
+        👍 https://duckduckgo.com/jnobs/
+        ❌ https://duckduckgo.com/j/bs/
+        ❌ https://duckduckgo.com/jobs/programmer
+
+        Pattern: /some/path/*
+        URLs:
+        👍 https://google.com/some/path/
+        👍 https://duckduckgo.com/some/path/even
+        ❌ https://google.com/some/path (`*` would cross path separator after `path`)
+        ❌ https://google.com/some/path/even/ (`*` would unclude path separator after `even`)
+        ❌ https://google.com/some/path/even/further (`*` would include path separator between `even` and `further`)
+
+        Pattern: /some/*/path
+        URLs:
+        👍 https://google.com/some/more/path
+        ❌ https://google.com/some/path (`*` would cross path separators after `some`, or before `path`)
+        ❌ https://google.com/some/even/more/path (`*` would include path separator between `even` and `more`)
+
+3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+
+        Pattern: *.go*gle.com/*earch
+        URLs:
+        👍 http://evil.google.com/search
+        👍 https://good.gogle.com/gearch
+        ❌ https://google.com/searching
+
 ## Glob pattern
 
 Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.

@@ -87,13 +87,19 @@ function domainGlobToRegex(s) {
   const escapedChars = [];
   let i = 0;
   while (i < s.length) {
-    if (s[i] === '\\' && (['?', '*'].includes(s[i + 1]))) {
-      escapedChars.push(s.slice(i, i + 2));
-      i = i + 2;
-    } else {
-      if (s[i] === '?') escapedChars.push('[^.]');
-      else if (s[i] === '*') escapedChars.push('.*');
-      else escapedChars.push(escapeRegExp(s[i]));
+    // '?' glob character
+    if (s[i] === '?') {
+      escapedChars.push('[^.]');
+      i++;
+    }
+    // '*' glob character
+    else if (s[i] === '*') {
+      escapedChars.push('[^.]*');
+      i++;
+    }
+    // 'Normal' characters
+    else {
+      escapedChars.push(escapeRegExp(s[i]));
       i++;
     }
   }
@@ -108,10 +114,21 @@ function pathGlobToRegex(s) {
       escapedChars.push(s.slice(i, i + 2));
       i = i + 2;
     } else {
-      if (s[i] === '?') escapedChars.push('[^/]');
-      else if (s[i] === '*') escapedChars.push('.*');
-      else escapedChars.push(escapeRegExp(s[i]));
-      i++;
+      // '?' glob character
+      if (s[i] === '?') {
+        escapedChars.push('[^/]');
+        i++;
+      }
+      // '*' glob character
+      else if (s[i] === '*') {
+        escapedChars.push('[^/]*');
+        i++;
+      }
+      // 'Normal' characters
+      else {
+        escapedChars.push(escapeRegExp(s[i]));
+        i++;
+      }
     }
   }
   return escapedChars.join('');
