@@ -37,10 +37,10 @@ export function cleanHostInput(value = '') {
     parsedHost.urlPattern = parsedHost.urlPattern.replace(/^\*\*\//, '/');
     // Trim '**' if it's the whole path part (to make the pattern 'domain-only')
     parsedHost.urlPattern = parsedHost.urlPattern.replace(/^([^/]+)\/\*\*$/, '$1');
-  }
 
-  // Patterns like 'a**.google.com', 'jobs.b**c.com', 'id.**d', `/a**/path`, `/more/b**c/path`, `/path/**d` are invalid
-  if (/[^/.]\*\*|\*\*[^/.]/.test(value)) return '';
+    // Patterns like 'a**.google.com', 'jobs.b**c.com', 'id.**d', `/a**/path`, `/more/b**c/path`, `/path/**d` are invalid
+    if (/[^/.]\*\*|\*\*[^/.]/.test(value)) return '';
+  }
 
   const cleanParts = [];
   if (parsedHost.containerNameRe !== undefined) cleanParts.push(`<${parsedHost.containerNameRe}>`);
