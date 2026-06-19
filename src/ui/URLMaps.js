@@ -94,6 +94,8 @@ class URLMaps {
           };
 
           hostTotalNum++;
+        } else {
+          qs('.remove-button', item).click();
         }
       }
 
