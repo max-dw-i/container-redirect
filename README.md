@@ -26,6 +26,8 @@ Supported glob characters are `*`, `**`, `?`.
 
 Search is case-sensitive.
 
+Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) if you want them to be interpreted literally.
+
 1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example,
 
         Pattern: duckduckgo.com
@@ -202,25 +204,6 @@ If `**` is in a domain or path segment, there cannot be any other characters in 
         URLs:
         👍 http://google.com/majestic/
         👍 https://good.google.com/majestic/company
-
-## Glob pattern
-
-Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.
-
-1. If a pattern contains only a domain, we try matching only the URL's domain (the whole domain). For example:
-
-- if the pattern is `duckduckgo.com`, then URLs `https://duckduckgo.com`, `https://duckduckgo.com/?q=search+me+baby` will match the pattern but URLs `https://google.com`, `https://google.com/?q=duckduckgo.com` will not match the pattern.
-
-- if the pattern is `*.duckduckgo.com`, then URLs `https://subdomain.duckduckgo.com`, `https://subdomain.duckduckgo.com/?q=search+me+baby` will match the pattern but URLs `https://duckduckgo.com`, `https://google.com/?q=subdomain.duckduckgo.com`, `https://evil.duckduckgo.com.evil.com` will not match the pattern.
-
-2. If a pattern contains only not only a domain but a path, we try matching the whole URL. For example:
-
-- if the pattern is `duckduckgo.com/\?q=search+me+baby`, then only URL `https://duckduckgo.com/?q=search+me+baby` will match the pattern. **Notice that `?` is escaped with `\`. Since `*` and `?` are glob meta-characters, you need to escape them if you want them to be interpreted literally.**
-
-- if the pattern is `*.duckduckgo.com/\?q=search+me+baby`, then URL `https://subdomain.duckduckgo.com/?q=search+me+baby` will match the pattern.
-
-The glob meta-characters `*`, `?` are converted into the regex characters `.*`, `.?` under the hood so there can be more than one such a character in a pattern.
-
 
 ## Regex pattern
 

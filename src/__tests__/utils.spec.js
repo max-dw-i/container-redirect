@@ -102,6 +102,26 @@ describe('utils', () => {
       {
         name: [
           'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'dots correctly escaped in pattern',
+        ],
+        url: 'https://duckduckgoGcom/',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'whole domain is tested',
+        ],
+        url: 'https://evil.duckduckgo.com.evil.com/',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
           '\'path\' URL',
           'pattern matches domain in URL',
         ],
@@ -789,176 +809,26 @@ describe('utils', () => {
         matchPattern: '**.google.com/majestic/**',
         isUrlMatch: true,
       },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'domain only\' URL',
-      //     'pattern matches domain in URL',
-      //   ],
-      //   url: 'https://subdomain.duckduckgo.com/',
-      //   matchPattern: '*.duckduckgo.com',
-      //   isUrlMatch: true,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'domain only\' URL',
-      //     'pattern does not match domain in URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/',
-      //   matchPattern: '*.duckduckgo.com',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'domain only\' URL',
-      //     'dots correctly escaped in pattern',
-      //   ],
-      //   url: 'https://duckduckgoGcom/',
-      //   matchPattern: 'duckduckgo.com',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'domain only\' URL',
-      //     'whole domain is tested',
-      //   ],
-      //   url: 'https://evil.duckduckgo.com.evil.com/',
-      //   matchPattern: 'duckduckgo.com',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'path\' URL',
-      //     'pattern matches domain in URL',
-      //   ],
-      //   url: 'https://subdomain.duckduckgo.com/?q=search+me+baby',
-      //   matchPattern: '*.duckduckgo.com',
-      //   isUrlMatch: true,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'path\' URL',
-      //     'pattern matches \'path\' part in URL but not \'domain\' part',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=subdomain.duckduckgo.com',
-      //   matchPattern: '*.duckduckgo.com',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'domain only\' pattern',
-      //     '\'path\' URL',
-      //     'pattern does not match any part of URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=duckduckgo.com',
-      //   matchPattern: '*.duckduckgo.com',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex plain \'path\' pattern',
-      //     '\'domain only\' URL',
-      //     'pattern does not match URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/',
-      //   matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex plain \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern matches URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=search+me+baby',
-      //   matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: true,
-      // },
-      // {
-      //   name: [
-      //     'non-regex plain \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern does not match URL (case-sensitivity, lowecase path, uppercase pattern)',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=search+me+baby',
-      //   matchPattern: 'DUCKDUCKGO.COM/\\?q=SEARCH+ME+BABY',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex plain \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
-      //   matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex plain \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern does not match URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
-      //   matchPattern: 'duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'path\' pattern',
-      //     '\'domain only\' URL',
-      //     'pattern does not match \'domain\' part of URL',
-      //   ],
-      //   url: 'https://duckduckgo.com/',
-      //   matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'path\' pattern',
-      //     '\'domain only\' URL',
-      //     'pattern does not match \'path\' part of URL',
-      //   ],
-      //   url: 'https://subdomain.duckduckgo.com/',
-      //   matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern matches URL',
-      //   ],
-      //   url: 'https://subdomain.duckduckgo.com/?q=search+me+baby',
-      //   matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: true,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern matches \'path\' part of URL but not \'domain\' part',
-      //   ],
-      //   url: 'https://duckduckgo.com/?q=search+me+baby',
-      //   matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
-      // {
-      //   name: [
-      //     'non-regex glob \'path\' pattern',
-      //     '\'path\' URL',
-      //     'pattern does not match URL',
-      //   ],
-      //   url: 'https://subdomain.duckduckgo.com/?q=do+not+search+me+baby',
-      //   matchPattern: '*.duckduckgo.com/\\?q=search+me+baby',
-      //   isUrlMatch: false,
-      // },
+      {
+        name: [
+          'non-regex glob mix pattern',
+          '\'path\' URL',
+          'pattern matches whole URL (1)',
+        ],
+        url: 'https://subdomain1.4.google.a/asterisk/path/',
+        matchPattern: '**.*.?.google.a*.**/**/*/path/',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob mix pattern',
+          '\'path\' URL',
+          'pattern matches whole URL (2)',
+        ],
+        url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later/or/not/asterisk/path/',
+        matchPattern: '**.*.?.google.a*.**/**/*/path/',
+        isUrlMatch: true,
+      },
       {
         name: [
           'regex \'domain only\' pattern',
