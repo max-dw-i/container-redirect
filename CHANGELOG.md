@@ -1,14 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [3.13.0] -
+## [4.0.0] -
 ### Changed
 - **BREAKING** Patterns, container names are now case-sensitive. The original extension converted any URL pattern to lowercase, meaning you could not write a pattern that'd match a URL with capital letters in it. Later, we added changes that introduced case-insensitive matching. The problem is that `RFC 3986` supports capital letters in URL paths but we ignored those cases since our pattern matching was case-insensitive. The same problem applied to container names. The names were converted to lowercase under the hood but Firefox supports case-sensitive names (so 'REDDIT' and 'reddit' are 2 different containers). These 2 problems should be fixed now.
 - **BREAKING** Regex patterns do not ignore URL scheme (`https://` and `http://`) anymore. It must be included into regex patterns explicitly (if necessary).
+- **BREAKING** Behaviour of the glob-metacharacters `?` and `*` was changed. Now their behavior is more conventional (see the updated `README.md`).
 
 ### Fixed
 - Comments are stripped correctly when CSV-editor is used.
 - Bug with 'Matching current container name'. Any rule with a container name set (for example, `<Work>github.com`) triggered if the current tab was a 'No Container' one.
+
+### Added
+- New glob meta-character `**`.
 
 ## [3.12.4] - 25 Jan 2026
 ### Added

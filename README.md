@@ -10,13 +10,13 @@ Firefox extension to automatically open websites in a container
 
 
 # Installation
-Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-US/firefox/addon/container-redirect/)
 
+Install the latest release for Firefox from [AMO](https://addons.mozilla.org/en-US/firefox/addon/container-redirect/)
 
 
 # Usage
 
-## Glob pattern (simplified)
+## Glob pattern
 
 Glob patterns cover most common cases (see the examples below). For more complicated scenarios, use regex patterns.
 
@@ -278,11 +278,11 @@ If the container defined in the rule does not exist, it will be created. If the 
 To prevent some [issues](https://github.com/GodKratos/temporary-containers/issues/38), `Temporary Containers` and `Temporary Containers Plus` are allowed to request containers' patterns.
 
 
-# Migrating to `3.13.x`
+# Migrating to `4.x.x`
 
 1. **Case-sensitive host/URL patterns and container names**
 
-- In the previous versions of the extension, patterns did not take into account the case of URLs and container names. For example, if you had pattern `@www.reddit.com/r/Cars`, it would match all of the following URLs: `https://www.reddit.com/r/CARS`,  `https://www.reddit.com/r/cars`,  `https://www.reddit.com/r/Cars`,  `https://www.reddit.com/r/CaRs`, `https://www.reddit.com/r/cArS`, and so on. While this was not a problem in most cases, technically, these are all different URLs (see RFC 3986). From now on, the pattern will only match the URL with `Cars` in the path, not any other case combination.
+- In the previous versions of the extension, patterns did not take into account the casing of URLs and container names. For example, if you had pattern `@www.reddit.com/r/Cars`, it would match all of the following URLs: `https://www.reddit.com/r/CARS`,  `https://www.reddit.com/r/cars`,  `https://www.reddit.com/r/Cars`,  `https://www.reddit.com/r/CaRs`, `https://www.reddit.com/r/cArS`, and so on. While this was not a problem in most cases, technically, these are all different URLs (see RFC 3986). From now on, the pattern will only match the URL with `Cars` in the path, not any other casing combination.
 
 *Action required*. Verify your host/URL patterns. If you need to match URLs with capital letters, please update your patterns to reflect the correct casing. You can migrate your regex patterns quickly by adding the `i` flag (replace `@` with `i@`).
 
@@ -295,6 +295,16 @@ To prevent some [issues](https://github.com/GodKratos/temporary-containers/issue
 - In the previous versions of the extension, we automatically trimmed the URL scheme (`https://` and `http://`). Consequently, a pattern like `@^www.reddit.com` would match both URLs `http://www.reddit.com` and `https://www.reddit.com`. However, users may want to define different rules for different schemes. Therefore, we do not do any URL processing prior to pattern matching.
 
 *Action required*. If your regex patterns are anchored to the beginning of the line (starts with `@^`), you must now include the scheme. To migrate quickly, replace `@^` with `@^https?://` in your existing regex patterns.
+
+3. **Glob pattern**
+
+- Behavior of the glob meta-chatacter `?` was changed. From now on, it matches any single character except the *path separator* characters (which is `.` in the domain part of URLs and `/` in the path part of URLs). Before, under the hood, `?` was converted into the regular expression `.?`.
+
+- Behavior of the glob meta-chatacter `*` was changed. From now on, it matches zero characters or any number of arbitrary characters except the *path separator* characters (see above). Before, under the hood, `*` was converted into the regular expression `.*`.
+
+- New glob meta-character `**` is introduced.
+
+*Action required*. Please, see the new [documentation](https://github.com/max-dw-i/container-redirect/blob/master/README.md#glob-pattern) and update your patterns.
 
 
 # Development
