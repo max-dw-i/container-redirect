@@ -84,7 +84,7 @@ export function cleanHostInput(value = '') {
   const cleanParts = [];
   if (ph.containerNameRe !== undefined) cleanParts.push(`<${ph.containerNameRe}>`);
   // Trim the scheme if it's a glob pattern
-  cleanParts.push(`${hostname}${path}`);
+  cleanParts.push(`${hostname}${port}${path}`);
   return cleanParts.join('');
 }
 export const cleanContainerName = (value) => value ? value.trim() : value;
@@ -230,7 +230,8 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
     if (urlPattern.hostname && !urlPattern.path) {
       // It's a domain-only glob pattern
       const re = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
-      hasUrlMatched = (new RegExp(re)).test(normalizedUrl.hostname);
+      hasUrlMatched = (new RegExp(re)).test(normalizedUrl.hostname)
+        && urlPattern.port.slice(1) === normalizedUrl.port;
     } else if (!urlPattern.hostname && urlPattern.path) {
       // It's a path-only glob pattern
       const re = `^${pathGlobToRegex(urlPattern.path)}$`;
@@ -240,6 +241,7 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
       const domainRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
       const pathRe = `^${pathGlobToRegex(urlPattern.path)}$`;
       hasUrlMatched = (new RegExp(domainRe)).test(normalizedUrl.hostname)
+        && urlPattern.port.slice(1) === normalizedUrl.port
         && (new RegExp(pathRe)).test(normalizedUrl.pathname + normalizedUrl.search);
     } else {
       console.error(`Map rule '${host}' cannot be parsed`);

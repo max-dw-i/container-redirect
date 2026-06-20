@@ -56,7 +56,7 @@ class URLMaps {
           active: true,
           windowId: browser.windows.WINDOW_ID_CURRENT,
         }))[0];
-        host = new URL(currentTab.url).hostname;
+        host = new URL(currentTab.url).host;
       } catch (e) {  // eslint-disable-line no-unused-vars
         // console.warn("Error while guessing hostname of active tab", e);
       }

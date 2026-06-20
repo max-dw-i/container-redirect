@@ -22,11 +22,11 @@ Glob patterns cover most common cases (see the examples below). For more complic
 
 Supported glob characters are `*`, `**`, `?`.
 
-### General
-
 Search is case-sensitive.
 
 Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) if you want them to be interpreted literally.
+
+### General
 
 1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example,
 
@@ -54,6 +54,25 @@ Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) i
         👍 http://duckduckgo.com/?q=search-me-baby
         👍 https://duckduckgo.com/?q=search-me-baby
         ❌ Any other URL
+
+4. Patterns support port matching. For example,
+
+        Pattern: duckduckgo.com
+        URLs:
+        👍 http://duckduckgo.com/
+        👍 https://duckduckgo.com/
+        ❌ http://duckduckgo.com:12345/
+        ❌ https://duckduckgo.com:12345/
+
+        Pattern: duckduckgo.com:12345
+        URLs:
+        👍 http://duckduckgo.com:12345/
+        👍 https://duckduckgo.com:12345/
+        ❌ http://duckduckgo.com/
+        ❌ https://duckduckgo.com/
+        ❌ http://duckduckgo.com:54321/
+        ❌ https://duckduckgo.com:54321/
+
 
 ### Glob pattern `?`
 
@@ -303,6 +322,8 @@ To prevent some [issues](https://github.com/GodKratos/temporary-containers/issue
 - Behavior of the glob meta-chatacter `*` was changed. From now on, it matches zero characters or any number of arbitrary characters except the *path separator* characters (see above). Before, under the hood, `*` was converted into the regular expression `.*`.
 
 - New glob meta-character `**` is introduced.
+
+- Port matching is now supported.
 
 *Action required*. Please, see the new [documentation](https://github.com/max-dw-i/container-redirect/blob/master/README.md#glob-pattern) and update your patterns.
 

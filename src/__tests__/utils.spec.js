@@ -122,6 +122,46 @@ describe('utils', () => {
       {
         name: [
           'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern with explicit port matches URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/',
+        matchPattern: 'duckduckgo.com:12345',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern with no port does not match URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/',
+        matchPattern: 'duckduckgo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern with explicit port does not match URL with no port',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'duckduckgo.com:12345',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
+          '\'domain only\' URL',
+          'pattern with explicit port does not match URL with explicit port if they are different',
+        ],
+        url: 'https://duckduckgo.com:54321/',
+        matchPattern: 'duckduckgo.com:12345',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'domain only\' pattern',
           '\'path\' URL',
           'pattern matches domain in URL',
         ],
@@ -277,6 +317,46 @@ describe('utils', () => {
         ],
         url: 'https://google.com/google.com/yahoo.com',
         matchPattern: 'google.com/yahoo.com',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'whole URL\' pattern',
+          'whole URL',
+          'pattern with explicit port matches URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/search',
+        matchPattern: 'duckduckgo.com:12345/search',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex plain \'whole URL\' pattern',
+          'whole URL',
+          'pattern with no port does not match URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/search',
+        matchPattern: 'duckduckgo.com/search',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'whole URL\' pattern',
+          'whole URL',
+          'pattern with explicit port does not match URL with no port',
+        ],
+        url: 'https://duckduckgo.com/search',
+        matchPattern: 'duckduckgo.com:12345/search',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex plain \'whole URL\' pattern',
+          'whole URL',
+          'pattern with explicit port does not match URL with explicit port if they are different',
+        ],
+        url: 'https://duckduckgo.com:54321/search',
+        matchPattern: 'duckduckgo.com:12345/search',
         isUrlMatch: false,
       },
       {
