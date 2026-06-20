@@ -84,7 +84,7 @@ export function cleanHostInput(value = '') {
   const cleanParts = [];
   if (ph.containerNameRe !== undefined) cleanParts.push(`<${ph.containerNameRe}>`);
   // Trim the scheme if it's a glob pattern
-  cleanParts.push(`${hostname}${port}${path}`);
+  cleanParts.push(`${hostname}${path}`);
   return cleanParts.join('');
 }
 export const cleanContainerName = (value) => value ? value.trim() : value;
