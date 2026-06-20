@@ -3,8 +3,9 @@ import punycode from 'punycode';
 export const MAX_EXTENSION_POPUP_WIDTH = 800;  // px, found in google
 
 const URL_SCHEMES = [
-  'http://',
+  // Order matters!
   'https://',
+  'http://',
 ];
 
 export const qs = (selector, node) => (node || document).querySelector(selector);
@@ -13,39 +14,77 @@ export const ce = (tagName) => document.createElement(tagName);
 
 const HOST_REGEX = new RegExp('^(?:<(.*?)>)?(i?@)?(.*)');
 
+function parseUrlPattern(s) {
+  let scheme = '';
+  for (const sc of URL_SCHEMES) {
+    if (s.startsWith(sc)) {
+      scheme = sc;
+      s = s.slice(sc.length);
+      break;
+    }
+  }
+
+  let host = '';
+  let path = '';
+  const firstSlashIndex = s.indexOf('/');
+  if (firstSlashIndex === -1) host = s;
+  else if (firstSlashIndex === 0) path = s;
+  else {
+    host = s.slice(0, firstSlashIndex);
+    path = s.slice(firstSlashIndex);
+  }
+
+  let hostname = '';
+  let port = '';
+  if (host) {
+    const hostParts = host.split(':');
+    hostname = hostParts[0];
+    if (hostParts.length > 1) port = `:${hostParts[1]}`;
+  }
+
+  return { scheme, hostname, port, path };
+}
+
 function parseMapHost(val) {
   const match = val.match(HOST_REGEX);
   if (match === null) return {};
   const [, containerNameRe, regexFlag, urlPattern] = match;
+  const parsedUrlPattern = parseUrlPattern(urlPattern);
   return {
     containerNameRe,
     regexFlag,
     urlPattern,
+    parsedUrlPattern,
   };
 }
 
 export function cleanHostInput(value = '') {
   if (value === '') return value;
 
-  const parsedHost = parseMapHost(value.trim());
-  if (!parsedHost.regexFlag) {
-    // Trim the scheme if it's a glob pattern
-    parsedHost.urlPattern = trimUrlScheme(parsedHost.urlPattern);
-    // Collapse glob '**'
-    parsedHost.urlPattern = parsedHost.urlPattern.replace(/\*\*(?:(?:\.|\/)\*\*)*/, '**');
-    // Trim '**' if it's the whole domain part (to make the pattern 'path-only')
-    parsedHost.urlPattern = parsedHost.urlPattern.replace(/^\*\*\//, '/');
-    // Trim '**' if it's the whole path part (to make the pattern 'domain-only')
-    parsedHost.urlPattern = parsedHost.urlPattern.replace(/^([^/]+)\/\*\*$/, '$1');
+  const trimmed = value.trim();
 
-    // Patterns like 'a**.google.com', 'jobs.b**c.com', 'id.**d', `/a**/path`, `/more/b**c/path`, `/path/**d` are invalid
-    if (/[^/.]\*\*|\*\*[^/.]/.test(value)) return '';
-  }
+  const ph = parseMapHost(trimmed);
+  if (ph.regexFlag) return trimmed;
+
+  // Patterns like 'a**.google.com', 'jobs.b**c.com', 'id.**d', '/a**/path', '/more/b**c/path', '/path/**d' are invalid
+  if (/[^/.]\*\*|\*\*[^/.]/.test(trimmed)) return '';
+
+  let hostname = ph.parsedUrlPattern.hostname;
+  let port = ph.parsedUrlPattern.port;
+  let path = ph.parsedUrlPattern.path;
+
+  // Trim '**' if it's the whole domain part (to make the pattern 'path-only')
+  hostname = hostname.replace(/^\*\*$/, '');
+  // Trim '**' if it's the whole path part (to make the pattern 'domain-only')
+  path = path.replace(/^\/\*\*$/, '');
+  // Collapse glob '**'
+  hostname = hostname.replace(/\*\*(?:\.\*\*)*/, '**');
+  path = path.replace(/\*\*(?:\/\*\*)*/, '**');
 
   const cleanParts = [];
-  if (parsedHost.containerNameRe !== undefined) cleanParts.push(`<${parsedHost.containerNameRe}>`);
-  if (parsedHost.regexFlag !== undefined) cleanParts.push(parsedHost.regexFlag);
-  if (parsedHost.urlPattern !== undefined) cleanParts.push(parsedHost.urlPattern);
+  if (ph.containerNameRe !== undefined) cleanParts.push(`<${ph.containerNameRe}>`);
+  // Trim the scheme if it's a glob pattern
+  cleanParts.push(`${hostname}${port}${path}`);
   return cleanParts.join('');
 }
 export const cleanContainerName = (value) => value ? value.trim() : value;
@@ -70,18 +109,6 @@ export const normalizeUrlPunnycode = (url) => {
 };
 
 /**
- * Trims the URL scheme.
- *
- * @param {string} url
- * @return {string}
- */
-export const trimUrlScheme = (url) => {
-  let trimmed = url;
-  for (const scheme of URL_SCHEMES) trimmed = trimmed.replace(scheme, '');
-  return trimmed;
-};
-
-/**
  * Escape all regex metacharacters in a string.
  *
  * @param {string} s
@@ -92,7 +119,7 @@ function escapeRegExp(s) {
   return s.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
-function domainGlobToRegex(s) {
+function hostnameGlobToRegex(s) {
   const escapedChars = [];
   let i = 0;
   while (i < s.length) {
@@ -189,39 +216,35 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
 
   const originalUrl = new window.URL(url);
   const normalizedUrl = normalizeUrlPunnycode(originalUrl);
-  let testUrl = normalizedUrl.toString();
   let hasUrlMatched = false;
   if (mapHost.regexFlag) {
     const caseInsensitive = mapHost.regexFlag[0] === 'i' ? 'i' : undefined;
+    const testUrl = normalizedUrl.toString();
     try {
       hasUrlMatched = (new RegExp(mapHost.urlPattern, caseInsensitive)).test(testUrl);
     } catch (e) {
       console.error('couldn\'t test regex', mapHost.urlPattern, e);
     }
   } else {
-    let re;
-    // The URL scheme is trimmed at this point so if there's a '/',
-    // it's a start of the URL's path
-    const firstSlashIndex = mapHost.urlPattern.indexOf('/');
-    if (firstSlashIndex === -1) {
+    const urlPattern = mapHost.parsedUrlPattern;
+    if (urlPattern.hostname && !urlPattern.path) {
       // It's a domain-only glob pattern
-      re = `^${domainGlobToRegex(mapHost.urlPattern)}$`;
-      testUrl = normalizedUrl.hostname;
-    } else if (firstSlashIndex === 0) {
+      const re = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
+      hasUrlMatched = (new RegExp(re)).test(normalizedUrl.hostname);
+    } else if (!urlPattern.hostname && urlPattern.path) {
       // It's a path-only glob pattern
-      re = `^${pathGlobToRegex(mapHost.urlPattern)}$`;
-      testUrl = normalizedUrl.pathname + normalizedUrl.search;
-    } else {
+      const re = `^${pathGlobToRegex(urlPattern.path)}$`;
+      hasUrlMatched = (new RegExp(re)).test(normalizedUrl.pathname + normalizedUrl.search);
+    } else if (urlPattern.hostname && urlPattern.path) {
       // It's a whole-URL glob pattern
-      const domainPattern = mapHost.urlPattern.slice(0, firstSlashIndex);
-      const pathPattern = mapHost.urlPattern.slice(firstSlashIndex);
-      re = `^${domainGlobToRegex(domainPattern)}${pathGlobToRegex(pathPattern)}$`;
-      testUrl = trimUrlScheme(testUrl);
+      const domainRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
+      const pathRe = `^${pathGlobToRegex(urlPattern.path)}$`;
+      hasUrlMatched = (new RegExp(domainRe)).test(normalizedUrl.hostname)
+        && (new RegExp(pathRe)).test(normalizedUrl.pathname + normalizedUrl.search);
+    } else {
+      console.error(`Map rule '${host}' cannot be parsed`);
+      return false;
     }
-    // let reStr = globToRegex(mapHost.urlPattern);
-    // reStr = `^${reStr}$`;
-    // hasUrlMatched = (new RegExp(reStr)).test(testUrl);
-    hasUrlMatched = (new RegExp(re)).test(testUrl);
   }
 
   if (!hasUrlMatched) return false;
