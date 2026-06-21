@@ -73,9 +73,9 @@ export function cleanHostInput(value = '') {
   let port = ph.parsedUrlPattern.port;
   let path = ph.parsedUrlPattern.path;
 
-  // Trim '**' if it's the whole domain part (to make the pattern 'path-only')
+  // Trim '**' if it's the whole hostname part (to make the pattern 'path-only')
   hostname = hostname.replace(/^\*\*$/, '');
-  // Trim '**' if it's the whole path part (to make the pattern 'domain-only')
+  // Trim '**' if it's the whole path part (to make the pattern 'host-only')
   path = path.replace(/^\/\*\*$/, '');
   // Collapse glob '**'
   hostname = hostname.replace(/\*\*(?:\.\*\*)*/, '**');
@@ -243,7 +243,7 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
   } else {
     const urlPattern = mapHost.parsedUrlPattern;
     if (urlPattern.hostname && !urlPattern.path) {
-      // It's a domain-only glob pattern
+      // It's a host-only glob pattern
       const hostnameRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
       const portRe = `^${portGlobToRegex(urlPattern.port.slice(1))}$`;
       hasUrlMatched = (new RegExp(hostnameRe)).test(normalizedUrl.hostname)
@@ -254,10 +254,10 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
       hasUrlMatched = (new RegExp(re)).test(normalizedUrl.pathname + normalizedUrl.search);
     } else if (urlPattern.hostname && urlPattern.path) {
       // It's a whole-URL glob pattern
-      const domainRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
+      const hostnameRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
       const portRe = `^${portGlobToRegex(urlPattern.port.slice(1))}$`;
       const pathRe = `^${pathGlobToRegex(urlPattern.path)}$`;
-      hasUrlMatched = (new RegExp(domainRe)).test(normalizedUrl.hostname)
+      hasUrlMatched = (new RegExp(hostnameRe)).test(normalizedUrl.hostname)
         && (new RegExp(portRe)).test(normalizedUrl.port)
         && (new RegExp(pathRe)).test(normalizedUrl.pathname + normalizedUrl.search);
     } else {

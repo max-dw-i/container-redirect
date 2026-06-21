@@ -28,7 +28,7 @@ Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) i
 
 ### General
 
-1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). For example,
+1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). For example,
 
         Pattern: duckduckgo.com
         URLs:
@@ -47,7 +47,7 @@ Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) i
         ❌ https://duckduckgo.com/?q=search-me-baby&ia=web
         ❌ https://duckduckgo.com/?q=search-me-baby/ (notice the trailing `/` at the end)
 
-3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
 
         Pattern: duckduckgo.com/\?q=search-me-baby
         URLs:
@@ -78,7 +78,7 @@ Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) i
 
 Character `?` matches exactly one character (except separators).
 
-1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `?` in the domain part of the URL matches any character except `.` (because it's a path separator here). For example,
+1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `?` in the hostname part of the URL matches any character except `.` (because it's a path separator here). For example,
 
         Pattern: go?gle.com
         URLs:
@@ -96,7 +96,7 @@ Character `?` matches exactly one character (except separators).
         👍 https://9oogle.com/p3th
         ❌ https://google.com/p/th
 
-3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
 
         Pattern: duckd?ckgo.com/\?q=search-me-bab?
         URLs:
@@ -116,7 +116,7 @@ Character `?` matches exactly one character (except separators).
 
 Character `*` matches any number of characters, including zero characters (there are some exceptions, see the examples below), but does not cross (or includes) path separators.
 
-1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `*` in the domain part of the URL matches any character (or none) except `.` (because it's a path separator here). For example,
+1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `*` in the hostname part of the URL matches any character (or none) except `.` (because it's a path separator here). For example,
 
         Pattern: go*gle.com
         URLs:
@@ -177,7 +177,7 @@ Character `*` matches any number of characters, including zero characters (there
         ❌ https://google.com/some/path (`*` would cross path separators after `some`, or before `path`)
         ❌ https://google.com/some/even/more/path (`*` would include path separator between `even` and `more`)
 
-3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
 
         Pattern: *.go*gle.com/*earch
         URLs:
@@ -207,9 +207,9 @@ Character `*` matches any number of characters, including zero characters (there
 
 Character `**` matches any number of domain levels and path segments, including zero.
 
-If `**` is in a domain or path segment, there cannot be any other characters in the same segment. For example, these are valid patterns: `**.google.com`, `jobs.**.com`, `id.**`, `/**/path`, `/more/**/path`, `/path/**`, and these are invalid patterns: `a**.google.com`, `jobs.b**c.com`, `id.**d`, `/a**/path`, `/more/b**c/path`, `/path/**d`.
+If `**` is in a hostname or path segment, there cannot be any other characters in the same segment. For example, these are valid patterns: `**.google.com`, `jobs.**.com`, `id.**`, `/**/path`, `/more/**/path`, `/path/**`, and these are invalid patterns: `a**.google.com`, `jobs.b**c.com`, `id.**d`, `/a**/path`, `/more/b**c/path`, `/path/**d`.
 
-1. If the pattern contains only a domain, we try matching only the URL's domain (the whole thing). `**` in the domain part of the URL matches any number of domain levels (including zero). For example,
+1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `**` in the hostname part of the URL matches any number of domain levels (including zero). For example,
 
         Pattern: **.google.com
         URLs:
@@ -243,7 +243,7 @@ If `**` is in a domain or path segment, there cannot be any other characters in 
         👍 https://google.com/evil/very/company
         👍 https://google.com/evil/very/very/company
 
-3. If the pattern contains both domain and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
+3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
 
         Pattern: **.google.com/majestic/**
         URLs:
@@ -260,13 +260,13 @@ A few examples:
 
 1. Search for a pattern anywhere in the URL. For example, pattern `@duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
 
-2. Search for a pattern in the URL's path but not in the domain. For example, pattern `@^https?://\S+/.*duckduckgo\.com` and URL `https://google.com/?q=duckduckgo.com`.
+2. Search for a pattern in the URL's path but not in the host. For example, pattern `@^https?://\S+/.*duckduckgo\.com` and URL `https://google.com/?q=duckduckgo.com`.
 
-3. Search for a pattern in the URL's path (any casing) but not in the domain. For example, pattern `i@^https?://\S+/.*duckduckgo\.com` will match URLs `https://google.com/?q=duckduckgo.com` and `https://google.com/?q=DUCKDUCKGO.com`.
+3. Search for a pattern in the URL's path (any casing) but not in the host. For example, pattern `i@^https?://\S+/.*duckduckgo\.com` will match URLs `https://google.com/?q=duckduckgo.com` and `https://google.com/?q=DUCKDUCKGO.com`.
 
-4. Search for a pattern in the domain only. For example, pattern `@^https?://[^/]*duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
+4. Search for a pattern in the hostname only. For example, pattern `@^https?://[^/]*duckduckgo` and URL `https://duckduckgo.com/?q=search+me+baby`.
 
-5. Search for a specific domain taking into account the scheme. For example, pattern `@^http://duckduckgo\.com/` and URL `http://duckduckgo.com/?q=search+me+baby`.
+5. Search for a specific host taking into account the scheme. For example, pattern `@^http://duckduckgo\.com/` and URL `http://duckduckgo.com/?q=search+me+baby`.
 
 
 ## Matching with existing container name (settings option 'Match current container name'):
@@ -343,7 +343,7 @@ To prevent some [issues](https://github.com/GodKratos/temporary-containers/issue
 
 3. **Glob pattern**
 
-- Behavior of the glob meta-chatacter `?` was changed. From now on, it matches any single character except the *path separator* characters (which is `.` in the domain part of URLs and `/` in the path part of URLs). Before, under the hood, `?` was converted into the regular expression `.?`.
+- Behavior of the glob meta-chatacter `?` was changed. From now on, it matches any single character except the *path separator* characters (which is `.` in the hostname part of URLs and `/` in the path part of URLs). Before, under the hood, `?` was converted into the regular expression `.?`.
 
 - Behavior of the glob meta-chatacter `*` was changed. From now on, it matches zero characters or any number of arbitrary characters except the *path separator* characters (see above). Before, under the hood, `*` was converted into the regular expression `.*`.
 
