@@ -20,7 +20,8 @@
     "web-ext": "web-ext run -s build/ --start-url=about:debugging#addons",
     "web-ext-perm": "mkdirp ./profile && web-ext run -s build/ --start-url=about:debugging#addons -p ./profile --keep-profile-changes",
     "lint": "eslint ./src && web-ext lint -s ./src",
-    "release:win": "powershell ./build-release.ps1",
+    "release:local": "powershell ./build-release.ps1",
+    "release:sign": "powershell ./build-release.ps1 -sign",
     "test": "jest",
     "test:watch": "jest --watchAll"
   },

@@ -11,6 +11,7 @@ containerise.iml
 # build
 build
 web-ext-artifacts
+.env
 
 # Other
 todo
