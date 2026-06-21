@@ -76,9 +76,7 @@ Since `*` and `?` are glob meta-characters, you need to escape them (with `\`) i
 
 ### Glob pattern `?`
 
-Character `?` matches exactly one character (except separators).
-
-1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `?` in the hostname part of the URL matches any character except `.` (because it's a path separator here). For example,
+Character `?` matches exactly one character (except separators, which are `.` in the hostname and `/` in the path). For example,
 
         Pattern: go?gle.com
         URLs:
@@ -87,8 +85,6 @@ Character `?` matches exactly one character (except separators).
         👍 https://go9gle.com/
         ❌ https://go.gle.com/
 
-2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `?` in the path part of the URL matches any character except `/` (because it's a path separator here). For example,
-
         Pattern: /p?th
         URLs:
         👍 https://google.com/path
@@ -96,15 +92,11 @@ Character `?` matches exactly one character (except separators).
         👍 https://9oogle.com/p3th
         ❌ https://google.com/p/th
 
-3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
-
         Pattern: duckd?ckgo.com/\?q=search-me-bab?
         URLs:
         👍 http://duckduckgo.com/?q=search-me-baby
         👍 https://duckdockgo.com/?q=search-me-baba
         ❌ https://duckdckgo.com/?q=search-me-baby
-
-4. Patterns support port matching. For example,
 
         Pattern: duckduckgo.com:?2???
         URLs:
@@ -114,9 +106,7 @@ Character `?` matches exactly one character (except separators).
 
 ### Glob pattern `*`
 
-Character `*` matches any number of characters, including zero characters (there are some exceptions, see the examples below), but does not cross (or includes) path separators.
-
-1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `*` in the hostname part of the URL matches any character (or none) except `.` (because it's a path separator here). For example,
+Character `*` matches any number of characters, including zero characters (there are some exceptions, see the examples below), but does not cross (or includes) path separators (which are `.` in the hostname and `/` in the path).
 
         Pattern: go*gle.com
         URLs:
@@ -153,8 +143,6 @@ Character `*` matches any number of characters, including zero characters (there
         ❌ https://jobs.com/ (`*` would cross path separators)
         ❌ https://jobs.third.company.com/ (includes a path separator)
 
-2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `*` in the path part of the URL matches any character (or none) except `/` (because it's a path separator here). For example,
-
         Pattern: /j*bs/
         URLs:
         👍 https://google.com/jbs/
@@ -177,15 +165,11 @@ Character `*` matches any number of characters, including zero characters (there
         ❌ https://google.com/some/path (`*` would cross path separators after `some`, or before `path`)
         ❌ https://google.com/some/even/more/path (`*` would include path separator between `even` and `more`)
 
-3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
-
         Pattern: *.go*gle.com/*earch
         URLs:
         👍 http://evil.google.com/search
         👍 https://good.gogle.com/gearch
         ❌ https://google.com/searching
-
-4. Patterns support port matching. For example,
 
         Pattern: duckduckgo.com:*
         URLs:
@@ -209,8 +193,6 @@ Character `**` matches any number of domain levels and path segments, including 
 
 If `**` is in a hostname or path segment, there cannot be any other characters in the same segment. For example, these are valid patterns: `**.google.com`, `jobs.**.com`, `id.**`, `/**/path`, `/more/**/path`, `/path/**`, and these are invalid patterns: `a**.google.com`, `jobs.b**c.com`, `id.**d`, `/a**/path`, `/more/b**c/path`, `/path/**d`.
 
-1. If the pattern contains only a host, we try matching only the URL's host (the whole thing). `**` in the hostname part of the URL matches any number of domain levels (including zero). For example,
-
         Pattern: **.google.com
         URLs:
         👍 https://google.com/
@@ -229,8 +211,6 @@ If `**` is in a hostname or path segment, there cannot be any other characters i
         👍 https://jobs.companyone.com/
         👍 https://jobs.other.company.com/
 
-2. If the pattern contains only a URL's path (pattern that starts with `/`), we try matching only the URL's path (the whole thing). `**` in the path part of the URL matches any any number of path segments (including zero). For example,
-
         Pattern: /evil/**
         URLs:
         👍 https://google.com/evil/
@@ -242,8 +222,6 @@ If `**` is in a hostname or path segment, there cannot be any other characters i
         👍 https://google.com/evil/company
         👍 https://google.com/evil/very/company
         👍 https://google.com/evil/very/very/company
-
-3. If the pattern contains both host and URL's path parts, we try matching the whole URL excluding the scheme (`http://`, `https://`). For example,
 
         Pattern: **.google.com/majestic/**
         URLs:
