@@ -155,6 +155,21 @@ function hostnameGlobToRegex(s) {
   return escapedChars.join('');
 }
 
+function portGlobToRegex(s) {
+  const escapedChars = [];
+  let i = 0;
+  while (i < s.length) {
+    // '?' glob character
+    if (s[i] === '?') escapedChars.push('.');
+    // '*' glob character
+    else if (s[i] === '*') escapedChars.push('.*');
+    // 'Normal' characters
+    else escapedChars.push(escapeRegExp(s[i]));
+    i++;
+  }
+  return escapedChars.join('');
+}
+
 function pathGlobToRegex(s) {
   const escapedChars = [];
   let i = 0;
@@ -229,9 +244,10 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
     const urlPattern = mapHost.parsedUrlPattern;
     if (urlPattern.hostname && !urlPattern.path) {
       // It's a domain-only glob pattern
-      const re = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
-      hasUrlMatched = (new RegExp(re)).test(normalizedUrl.hostname)
-        && urlPattern.port.slice(1) === normalizedUrl.port;
+      const hostnameRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
+      const portRe = `^${portGlobToRegex(urlPattern.port.slice(1))}$`;
+      hasUrlMatched = (new RegExp(hostnameRe)).test(normalizedUrl.hostname)
+        && (new RegExp(portRe)).test(normalizedUrl.port);
     } else if (!urlPattern.hostname && urlPattern.path) {
       // It's a path-only glob pattern
       const re = `^${pathGlobToRegex(urlPattern.path)}$`;
@@ -239,9 +255,10 @@ export const matchesSavedMap = (url, currentContainerName, { host }) => {
     } else if (urlPattern.hostname && urlPattern.path) {
       // It's a whole-URL glob pattern
       const domainRe = `^${hostnameGlobToRegex(urlPattern.hostname)}$`;
+      const portRe = `^${portGlobToRegex(urlPattern.port.slice(1))}$`;
       const pathRe = `^${pathGlobToRegex(urlPattern.path)}$`;
       hasUrlMatched = (new RegExp(domainRe)).test(normalizedUrl.hostname)
-        && urlPattern.port.slice(1) === normalizedUrl.port
+        && (new RegExp(portRe)).test(normalizedUrl.port)
         && (new RegExp(pathRe)).test(normalizedUrl.pathname + normalizedUrl.search);
     } else {
       console.error(`Map rule '${host}' cannot be parsed`);

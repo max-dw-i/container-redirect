@@ -104,6 +104,14 @@ Character `?` matches exactly one character (except separators).
         👍 https://duckdockgo.com/?q=search-me-baba
         ❌ https://duckdckgo.com/?q=search-me-baby
 
+4. Patterns support port matching. For example,
+
+        Pattern: duckduckgo.com:?2???
+        URLs:
+        👍 https://duckduckgo.com:12345/
+        ❌ https://duckduckgo.com:21345/
+        ❌ https://duckduckgo.com:1234/
+
 ### Glob pattern `*`
 
 Character `*` matches any number of characters, including zero characters (there are some exceptions, see the examples below), but does not cross (or includes) path separators.
@@ -176,6 +184,24 @@ Character `*` matches any number of characters, including zero characters (there
         👍 http://evil.google.com/search
         👍 https://good.gogle.com/gearch
         ❌ https://google.com/searching
+
+4. Patterns support port matching. For example,
+
+        Pattern: duckduckgo.com:*
+        URLs:
+        👍 https://duckduckgo.com:12345/
+        👍 https://duckduckgo.com/
+        ❌ https://duckduckgo.com:21345/
+        ❌ https://duckduckgo.com:1234/
+
+        Pattern: duckduckgo.com:*2*
+        URLs:
+        👍 https://duckduckgo.com:12345/
+        👍 https://duckduckgo.com:12/
+        👍 https://duckduckgo.com:2345/
+        👍 https://duckduckgo.com:2/
+        ❌ https://duckduckgo.com/
+        ❌ https://duckduckgo.com:34567/
 
 ### Glob pattern `**`
 

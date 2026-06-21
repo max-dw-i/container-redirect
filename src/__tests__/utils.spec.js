@@ -382,6 +382,36 @@ describe('utils', () => {
       {
         name: [
           'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'domain only\' URL',
+          'pattern with only \'?\' in place of port does not match URL with no port',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'duckduckgo.com:?',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'domain only\' URL',
+          'pattern with \'?\' and numbers in place of port does not match URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:2/',
+        matchPattern: 'duckduckgo.com:?2?',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
+          '\'domain only\' URL',
+          'pattern with \'?\' and numbers in place of port matches URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/',
+        matchPattern: 'duckduckgo.com:?2???',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'?\'',
           '\'path\' URL',
           'pattern matches domain in URL',
         ],
@@ -578,6 +608,56 @@ describe('utils', () => {
         url: 'https://jobs.third.company.com/',
         matchPattern: 'jobs.*.com',
         isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'*\'',
+          '\'domain only\' URL',
+          'pattern with only \'*\' in place of port matches URL with explicit port',
+        ],
+        url: 'https://duckduckgo.com:12345/',
+        matchPattern: 'duckduckgo.com:*',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'*\'',
+          '\'domain only\' URL',
+          'pattern with only \'*\' in place of port matches URL with no port',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'duckduckgo.com:*',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'*\'',
+          '\'domain only\' URL',
+          'pattern with \'*\' and numbers in place of port does not match URL with no port',
+        ],
+        url: 'https://duckduckgo.com/',
+        matchPattern: 'duckduckgo.com:12*',
+        isUrlMatch: false,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'*\'',
+          '\'domain only\' URL',
+          'pattern with \'*\' and numbers in place of port matches URL with explicit port (1)',
+        ],
+        url: 'https://duckduckgo.com:2/',
+        matchPattern: 'duckduckgo.com:*2*',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob \'domain only\' pattern with \'*\'',
+          '\'domain only\' URL',
+          'pattern with \'*\' and numbers in place of port matches URL with explicit port (2)',
+        ],
+        url: 'https://duckduckgo.com:12345/',
+        matchPattern: 'duckduckgo.com:*2*',
+        isUrlMatch: true,
       },
       {
         name: [
@@ -907,6 +987,16 @@ describe('utils', () => {
         ],
         url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later/or/not/asterisk/path/',
         matchPattern: '**.*.?.google.a*.**/**/*/path/',
+        isUrlMatch: true,
+      },
+      {
+        name: [
+          'non-regex glob mix pattern',
+          '\'path\' URL',
+          'pattern matches whole URL (2)',
+        ],
+        url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later:12345/or/not/asterisk/path/',
+        matchPattern: '**.*.?.google.a*.**:?2*45*/**/*/path/',
         isUrlMatch: true,
       },
       {
