@@ -22,6 +22,7 @@
     "lint": "eslint ./src && web-ext lint -s ./src",
     "release:local": "powershell ./build-release.ps1",
     "release:sign": "powershell ./build-release.ps1 -sign",
+    "publish:github": "gh release create",
     "test": "jest",
     "test:watch": "jest --watchAll"
   },
