@@ -68,1248 +68,656 @@ describe('utils', () => {
   });
 
   describe('matchesSavedMap', () => {
-    const testCases = [
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern matches domain in URL',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL',
-        ],
-        url: 'https://google.com/',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL (case-sensitivity)',
-        ],
-        url: 'https://google.com/',
-        matchPattern: 'GOOGLE.COM',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'dots correctly escaped in pattern',
-        ],
-        url: 'https://duckduckgoGcom/',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'whole domain is tested',
-        ],
-        url: 'https://evil.duckduckgo.com.evil.com/',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern with explicit port matches URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/',
-        matchPattern: 'duckduckgo.com:12345',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern with no port does not match URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern with explicit port does not match URL with no port',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckduckgo.com:12345',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern with explicit port does not match URL with explicit port if they are different',
-        ],
-        url: 'https://duckduckgo.com:54321/',
-        matchPattern: 'duckduckgo.com:12345',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern matches domain in URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern matches \'path\' part in URL but not \'domain\' part',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern does not match any part of URL',
-        ],
-        url: 'https://google.com/?q=yahoo.com',
-        matchPattern: 'duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern matches \'path\' part in URL but not \'domain\' part',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '/\\?q=duckduckgo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern matches \'path\' part in URL except trailing slash',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com/',
-        matchPattern: '/\\?q=duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern matches beginning of \'path\' part in URL but but not the whole thing',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com&ia=web',
-        matchPattern: '/\\?q=duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern matches \'domain\' part in URL but not \'path\' part',
-        ],
-        url: 'https://google.com/duckduckgo.com',
-        matchPattern: '/google.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern does not match path in URL (case-sensitivity)',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '/\\?q=DUCKDUCKGO.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'pattern does not match any part of URL',
-        ],
-        url: 'https://google.com/?q=yahoo.com',
-        matchPattern: '/\\?q=duckduckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'empty path pattern matches URL',
-        ],
-        url: 'https://google.com/',
-        matchPattern: '/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          '\'path\' URL',
-          'empty path pattern does not match URL',
-        ],
-        url: 'https://google.com/?q=yahoo.com',
-        matchPattern: '/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          'whole URL',
-          'pattern matches URL with \'http\' scheme',
-        ],
-        url: 'http://google.com/?q=yahoo.com',
-        matchPattern: 'google.com/\\?q=yahoo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          'whole URL',
-          'pattern matches URL with \'https\' scheme',
-        ],
-        url: 'https://google.com/?q=yahoo.com',
-        matchPattern: 'google.com/\\?q=yahoo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          'whole URL',
-          'pattern does not match URL with trailing slash',
-        ],
-        url: 'https://google.com/?q=yahoo.com/',
-        matchPattern: 'google.com/\\?q=yahoo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          'whole URL',
-          'pattern matches the beginning of URL but not whole thing',
-        ],
-        url: 'https://google.com/?q=yahoo.com&ia=web',
-        matchPattern: 'google.com/\\?q=yahoo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'path only\' pattern',
-          'whole URL',
-          'pattern matches \'path\' part of URL but not whole URL',
-        ],
-        url: 'https://google.com/google.com/yahoo.com',
-        matchPattern: 'google.com/yahoo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'whole URL\' pattern',
-          'whole URL',
-          'pattern with explicit port matches URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/search',
-        matchPattern: 'duckduckgo.com:12345/search',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex plain \'whole URL\' pattern',
-          'whole URL',
-          'pattern with no port does not match URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/search',
-        matchPattern: 'duckduckgo.com/search',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'whole URL\' pattern',
-          'whole URL',
-          'pattern with explicit port does not match URL with no port',
-        ],
-        url: 'https://duckduckgo.com/search',
-        matchPattern: 'duckduckgo.com:12345/search',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex plain \'whole URL\' pattern',
-          'whole URL',
-          'pattern with explicit port does not match URL with explicit port if they are different',
-        ],
-        url: 'https://duckduckgo.com:54321/search',
-        matchPattern: 'duckduckgo.com:12345/search',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckd?ckgo.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL (\'.\' in same position as \'?\')',
-        ],
-        url: 'https://duckd.ckgo.com/',
-        matchPattern: 'duckd?ckgo.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'domain only\' URL',
-          'pattern with only \'?\' in place of port does not match URL with no port',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckduckgo.com:?',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'domain only\' URL',
-          'pattern with \'?\' and numbers in place of port does not match URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:2/',
-        matchPattern: 'duckduckgo.com:?2?',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'domain only\' URL',
-          'pattern with \'?\' and numbers in place of port matches URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/',
-        matchPattern: 'duckduckgo.com:?2???',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'path\' URL',
-          'pattern matches domain in URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search',
-        matchPattern: '/\\?q=s?arch',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          '\'path\' URL',
-          'pattern does not match domain in URL (\'/\' in same position as \'?\')',
-        ],
-        url: 'https://duckduckgo.com/?q=s/arch',
-        matchPattern: '/\\?q=s?arch',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          'whole URL',
-          'pattern matches domain in URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search',
-        matchPattern: 'duckd?ckgo.com/\\?q=s?arch',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'?\'',
-          'whole URL',
-          'pattern does not match domain in URL (\'.\' and \'/\' in same position as \'?\')',
-        ],
-        url: 'https://duckd.ckgo.com/?q=s/arch',
-        matchPattern: 'duckd?ckgo.com/\\?q=s?arch',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL with 0 characters in place of \'*\'',
-        ],
-        url: 'https://gogle.com/',
-        matchPattern: 'go*gle.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL with 1 characters in place of \'*\'',
-        ],
-        url: 'https://google.com/',
-        matchPattern: 'go*gle.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL with >1 characters in place of \'*\'',
-        ],
-        url: 'https://gonoogle.com/',
-        matchPattern: 'go*gle.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL with \'.\' in place of \'*\'',
-        ],
-        url: 'https://go.gle.com/',
-        matchPattern: 'go*gle.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match URL if \'*\' in another subdomain',
-        ],
-        url: 'https://evil.google.com/',
-        matchPattern: 'go*gle.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches subdomain in URL if \'*\' is alone and in same subdomain',
-        ],
-        url: 'https://evil.google.com/',
-        matchPattern: '*.google.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if no subdomain where \'*\' is',
-        ],
-        url: 'https://google.com/',
-        matchPattern: '*.google.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if >1 subdomain where \'*\' is',
-        ],
-        url: 'https://bad.evil.google.com/',
-        matchPattern: '*.google.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches subdomain in URL if \'*\' is alone and in same top domain',
-        ],
-        url: 'https://google.com/',
-        matchPattern: 'google.*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if no subdomain where \'*\' is (top level)',
-        ],
-        url: 'https://google/',
-        matchPattern: 'google.*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if >1 subdomain where \'*\' is (top level)',
-        ],
-        url: 'https://google.evil.com/',
-        matchPattern: 'google.*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if whole pattern is only \'*\' and only one domain level',
-        ],
-        url: 'https://localhost/',
-        matchPattern: '*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if whole pattern is only \'*\' and multilple domain levels',
-        ],
-        url: 'https://google.com/',
-        matchPattern: '*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if \'*\' is alone and in the middle of domain',
-        ],
-        url: 'https://jobs.companyone.com/',
-        matchPattern: 'jobs.*.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if no subdomain where \'*\' is (middle)',
-        ],
-        url: 'https://jobs.com/',
-        matchPattern: 'jobs.*.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern does not match domain in URL if >1 subdomain where \'*\' is (middle)',
-        ],
-        url: 'https://jobs.third.company.com/',
-        matchPattern: 'jobs.*.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern with only \'*\' in place of port matches URL with explicit port',
-        ],
-        url: 'https://duckduckgo.com:12345/',
-        matchPattern: 'duckduckgo.com:*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern with only \'*\' in place of port matches URL with no port',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckduckgo.com:*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern with \'*\' and numbers in place of port does not match URL with no port',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'duckduckgo.com:12*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern with \'*\' and numbers in place of port matches URL with explicit port (1)',
-        ],
-        url: 'https://duckduckgo.com:2/',
-        matchPattern: 'duckduckgo.com:*2*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'*\'',
-          '\'domain only\' URL',
-          'pattern with \'*\' and numbers in place of port matches URL with explicit port (2)',
-        ],
-        url: 'https://duckduckgo.com:12345/',
-        matchPattern: 'duckduckgo.com:*2*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL with 0 characters in place of \'*\'',
-        ],
-        url: 'https://google.com/jbs/',
-        matchPattern: '/j*bs/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL with 1 characters in place of \'*\'',
-        ],
-        url: 'https://google.com/jobs/',
-        matchPattern: '/j*bs/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL with >1 characters in place of \'*\'',
-        ],
-        url: 'https://duckduckgo.com/jnobs/',
-        matchPattern: '/j*bs/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL with \'/\' in place of \'*\'',
-        ],
-        url: 'https://duckduckgo.com/j/bs/',
-        matchPattern: '/j*bs/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match URL if pattern does not match whole URL, only substring',
-        ],
-        url: 'https://duckduckgo.com/jobs/programmer',
-        matchPattern: '/j*bs/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL if \'*\' is alone and 0 characters in place of \'*\' (trailing)',
-        ],
-        url: 'https://google.com/some/path/',
-        matchPattern: '/some/path/*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL if \'*\' is alone and >0 characters in place of \'*\' (trailing)',
-        ],
-        url: 'https://duckduckgo.com/some/path/even',
-        matchPattern: '/some/path/*',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL if URL has no \'/\' even if it\'s expected in pattern (trailing)',
-        ],
-        url: 'https://google.com/some/path ',
-        matchPattern: '/some/path/*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL if URL has unexpected \'/\' (trailing)',
-        ],
-        url: 'https://google.com/some/path/even/',
-        matchPattern: '/some/path/*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL if URL has >1 segment in place of \'*\' (trailing)',
-        ],
-        url: 'https://google.com/some/path/even/further ',
-        matchPattern: '/some/path/*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL if \'*\' is alone (middle) and >1 characters in place of \'*\'',
-        ],
-        url: 'https://google.com/some/more/path',
-        matchPattern: '/some/*/path',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL if \'*\' is alone (middle) and no path segment in place of \'*\'',
-        ],
-        url: 'https://google.com/some/path',
-        matchPattern: '/some/*/path',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern does not match path in URL if \'*\' is alone (middle) and >1 path segment in place of \'*\'',
-        ],
-        url: 'https://google.com/some/even/more/path',
-        matchPattern: '/some/*/path',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'non-regex glob \'whole URL\' pattern with \'*\'',
-          '\'path\' URL',
-          'pattern matches path in URL if \'*\' is alone (middle) and >1 characters in place of \'*\'',
-        ],
-        url: 'https://good.gogle.com/gearch',
-        matchPattern: '*.go*gle.com/*earch',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern start)',
-        ],
-        url: 'https://google.com/',
-        matchPattern: '**.google.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern start)',
-        ],
-        url: 'https://evil.google.com/',
-        matchPattern: '**.google.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern start)',
-        ],
-        url: 'https://super.evil.google.com/',
-        matchPattern: '**.google.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern end)',
-        ],
-        url: 'https://jobs/',
-        matchPattern: 'jobs.**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern end)',
-        ],
-        url: 'https://jobs.com/',
-        matchPattern: 'jobs.**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern end)',
-        ],
-        url: 'https://jobs.company.com/',
-        matchPattern: 'jobs.**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if no subdomain in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://jobs.com/',
-        matchPattern: 'jobs.**.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if 1 subdomain in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://jobs.companyone.com/',
-        matchPattern: 'jobs.**.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'domain only\' pattern with \'**\'',
-          '\'domain only\' URL',
-          'pattern matches domain in URL if >1 subdomain in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://jobs.other.company.com/',
-        matchPattern: 'jobs.**.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if no segment in place of \'**\' (pattern end)',
-        ],
-        url: 'https://google.com/evil/',
-        matchPattern: '/evil/**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if 1 segment in place of \'**\' (pattern end)',
-        ],
-        url: 'https://google.com/evil/villain',
-        matchPattern: '/evil/**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if >1 segments in place of \'**\' (pattern end)',
-        ],
-        url: 'https://duckduckgo.com/evil/not/good/',
-        matchPattern: '/evil/**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if no segment in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://google.com/evil/company',
-        matchPattern: '/evil/**/company',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if 1 segment in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://google.com/evil/very/company',
-        matchPattern: '/evil/**/company',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'path only\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches path in URL if >1 segments in place of \'**\' (pattern middle)',
-        ],
-        url: 'https://google.com/evil/very/very/company',
-        matchPattern: '/evil/**/company',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'whole URL\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches whole URL (1)',
-        ],
-        url: 'http://google.com/majestic/',
-        matchPattern: '**.google.com/majestic/**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob \'whole URL\' pattern with \'**\'',
-          '\'path\' URL',
-          'pattern matches whole URL (2)',
-        ],
-        url: 'https://good.google.com/majestic/company',
-        matchPattern: '**.google.com/majestic/**',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob mix pattern',
-          '\'path\' URL',
-          'pattern matches whole URL (1)',
-        ],
-        url: 'https://subdomain1.4.google.a/asterisk/path/',
-        matchPattern: '**.*.?.google.a*.**/**/*/path/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob mix pattern',
-          '\'path\' URL',
-          'pattern matches whole URL (2)',
-        ],
-        url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later/or/not/asterisk/path/',
-        matchPattern: '**.*.?.google.a*.**/**/*/path/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'non-regex glob mix pattern',
-          '\'path\' URL',
-          'pattern matches whole URL (2)',
-        ],
-        url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later:12345/or/not/asterisk/path/',
-        matchPattern: '**.*.?.google.a*.**:?2*45*/**/*/path/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: '@^https://duckduckgo\\.com/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match URL (no URL scheme in pattern)',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: '@^duckduckgo\\.com/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: '@^https://DUCKDUCKGO\\.COM/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern with \'i\' flag',
-          '\'domain only\' URL',
-          'pattern matches URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: '@^https://google\\.com/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://duckduckgo\\.com/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://DUCKDUCKGO\\.COM/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern does not match \'domain\' part of URL',
-        ],
-        url: 'https://google.com/?q=search+me+baby',
-        matchPattern: '@^https://duckduckgo\\.com/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'domain only\' pattern',
-          '\'path\' URL',
-          'pattern does not match \'path\' part of URL',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '@^https://duckduckgo\\.com/',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'path\' pattern',
-          '\'path\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity, lowecase path, uppercase pattern)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'path\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity, lowecase path, uppercase pattern)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: 'i@^https://DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
-        ],
-        url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
-        matchPattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'path\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity, uppercase path, lowercase pattern)',
-        ],
-        url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
-        matchPattern: 'i@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
-        matchPattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in domain\' pattern',
-          '\'path\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://[^/]*duckduckgo',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in domain\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://[^/]*DUCKDUCKGO',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in domain\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: 'i@^https://[^/]*DUCKDUCKGO',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in domain\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '@^https://[^/]*duckduckgo',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern',
-          '\'path\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '@^https://\\S+/.*duckduckgo\\.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity, lowercase path, uppercase pattern)',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: '@^https://\\S+/.*DUCKDUCKGO\\.COM',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity, lowercase path, uppercase pattern)',
-        ],
-        url: 'https://google.com/?q=duckduckgo.com',
-        matchPattern: 'i@^https://\\S+/.*DUCKDUCKGO\\.COM',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity, uppercase path, lowercase pattern)',
-        ],
-        url: 'https://google.com/?q=DUCKDUCKGO.COM',
-        matchPattern: '@^https://\\S+/.*duckduckgo\\.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity, uppercase path, lowercase pattern)',
-        ],
-        url: 'https://google.com/?q=DUCKDUCKGO.COM',
-        matchPattern: 'i@^https://\\S+/.*duckduckgo\\.com',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@^https://\\S+/.*duckduckgo\\.com',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL path\' pattern',
-          '\'domain only\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://duckduckgo.com/',
-        matchPattern: '@^https://\\S+/.*duckduckgo\\.com.*',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL\' pattern',
-          '\'path\' URL',
-          'pattern matches URL',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@duckduckgo',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: '@DUCKDUCKGO',
-        isUrlMatch: false,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL\' pattern with \'i\' flag',
-          '\'path\' URL',
-          'pattern matches URL (case-sensitivity)',
-        ],
-        url: 'https://duckduckgo.com/?q=search+me+baby',
-        matchPattern: 'i@DUCKDUCKGO',
-        isUrlMatch: true,
-      },
-      {
-        name: [
-          'regex \'anywhere in URL\' pattern',
-          '\'path\' URL',
-          'pattern does not match URL',
-        ],
-        url: 'https://google.com/?q=do+not+search+me+baby',
-        matchPattern: '@duckduckgo',
-        isUrlMatch: false,
-      },
-    ];
+    const plainPatterns = {
+      group: 'plain',
+      testCases: [
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckduckgo.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: 'GOOGLE.COM',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgoGcom/',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://evil.duckduckgo.com.evil.com/',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/',
+          pattern: 'duckduckgo.com:12345',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckduckgo.com:12345',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:54321/',
+          pattern: 'duckduckgo.com:12345',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: 'duckduckgo.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com',
+          pattern: 'duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '/\\?q=duckduckgo.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com/',
+          pattern: '/\\?q=duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com&ia=web',
+          pattern: '/\\?q=duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/duckduckgo.com',
+          pattern: '/google.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '/\\?q=DUCKDUCKGO.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com',
+          pattern: '/\\?q=duckduckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: '/',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com',
+          pattern: '/',
+          match: false,
+        },
+        {
+          url: 'http://google.com/?q=yahoo.com',
+          pattern: 'google.com/\\?q=yahoo.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com',
+          pattern: 'google.com/\\?q=yahoo.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com/',
+          pattern: 'google.com/\\?q=yahoo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=yahoo.com&ia=web',
+          pattern: 'google.com/\\?q=yahoo.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/google.com/yahoo.com',
+          pattern: 'google.com/yahoo.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/search',
+          pattern: 'duckduckgo.com:12345/search',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/search',
+          pattern: 'duckduckgo.com/search',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/search',
+          pattern: 'duckduckgo.com:12345/search',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:54321/search',
+          pattern: 'duckduckgo.com:12345/search',
+          match: false,
+        },
+      ],
+    };
+    const globQuestionMarkPatterns = {
+      group: 'glob ?',
+      testCases: [
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckd?ckgo.com',
+          match: true,
+        },
+        {
+          url: 'https://duckd.ckgo.com/',
+          pattern: 'duckd?ckgo.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckduckgo.com:?',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:2/',
+          pattern: 'duckduckgo.com:?2?',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/',
+          pattern: 'duckduckgo.com:?2???',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search',
+          pattern: '/\\?q=s?arch',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=s/arch',
+          pattern: '/\\?q=s?arch',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search',
+          pattern: 'duckd?ckgo.com/\\?q=s?arch',
+          match: true,
+        },
+        {
+          url: 'https://duckd.ckgo.com/?q=s/arch',
+          pattern: 'duckd?ckgo.com/\\?q=s?arch',
+          match: false,
+        },
+      ],
+    };
+    const globSingleAsteriskPatterns = {
+      group: 'glob *',
+      testCases: [
+        {
+          url: 'https://gogle.com/',
+          pattern: 'go*gle.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: 'go*gle.com',
+          match: true,
+        },
+        {
+          url: 'https://gonoogle.com/',
+          pattern: 'go*gle.com',
+          match: true,
+        },
+        {
+          url: 'https://go.gle.com/',
+          pattern: 'go*gle.com',
+          match: false,
+        },
+        {
+          url: 'https://evil.google.com/',
+          pattern: 'go*gle.com',
+          match: false,
+        },
+        {
+          url: 'https://evil.google.com/',
+          pattern: '*.google.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: '*.google.com',
+          match: false,
+        },
+        {
+          url: 'https://bad.evil.google.com/',
+          pattern: '*.google.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: 'google.*',
+          match: true,
+        },
+        {
+          url: 'https://google/',
+          pattern: 'google.*',
+          match: false,
+        },
+        {
+          url: 'https://google.evil.com/',
+          pattern: 'google.*',
+          match: false,
+        },
+        {
+          url: 'https://localhost/',
+          pattern: '*',
+          match: true,
+        },
+        {
+          url: 'https://google.com/',
+          pattern: '*',
+          match: false,
+        },
+        {
+          url: 'https://jobs.companyone.com/',
+          pattern: 'jobs.*.com',
+          match: true,
+        },
+        {
+          url: 'https://jobs.com/',
+          pattern: 'jobs.*.com',
+          match: false,
+        },
+        {
+          url: 'https://jobs.third.company.com/',
+          pattern: 'jobs.*.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/',
+          pattern: 'duckduckgo.com:*',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckduckgo.com:*',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'duckduckgo.com:12*',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com:2/',
+          pattern: 'duckduckgo.com:*2*',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com:12345/',
+          pattern: 'duckduckgo.com:*2*',
+          match: true,
+        },
+        {
+          url: 'https://google.com/jbs/',
+          pattern: '/j*bs/',
+          match: true,
+        },
+        {
+          url: 'https://google.com/jobs/',
+          pattern: '/j*bs/',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/jnobs/',
+          pattern: '/j*bs/',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/j/bs/',
+          pattern: '/j*bs/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/jobs/programmer',
+          pattern: '/j*bs/',
+          match: false,
+        },
+        {
+          url: 'https://google.com/some/path/',
+          pattern: '/some/path/*',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/some/path/even',
+          pattern: '/some/path/*',
+          match: true,
+        },
+        {
+          url: 'https://google.com/some/path ',
+          pattern: '/some/path/*',
+          match: false,
+        },
+        {
+          url: 'https://google.com/some/path/even/',
+          pattern: '/some/path/*',
+          match: false,
+        },
+        {
+          url: 'https://google.com/some/path/even/further ',
+          pattern: '/some/path/*',
+          match: false,
+        },
+        {
+          url: 'https://google.com/some/more/path',
+          pattern: '/some/*/path',
+          match: true,
+        },
+        {
+          url: 'https://google.com/some/path',
+          pattern: '/some/*/path',
+          match: false,
+        },
+        {
+          url: 'https://google.com/some/even/more/path',
+          pattern: '/some/*/path',
+          match: false,
+        },
+        {
+          url: 'https://good.gogle.com/gearch',
+          pattern: '*.go*gle.com/*earch',
+          match: true,
+        },
+      ],
+    };
+    const globDoubleAsteriskPatterns = {
+      group: 'glob **',
+      testCases: [
+        {
+          url: 'https://google.com/',
+          pattern: '**.google.com',
+          match: true,
+        },
+        {
+          url: 'https://evil.google.com/',
+          pattern: '**.google.com',
+          match: true,
+        },
+        {
+          url: 'https://super.evil.google.com/',
+          pattern: '**.google.com',
+          match: true,
+        },
+        {
+          url: 'https://jobs/',
+          pattern: 'jobs.**',
+          match: true,
+        },
+        {
+          url: 'https://jobs.com/',
+          pattern: 'jobs.**',
+          match: true,
+        },
+        {
+          url: 'https://jobs.company.com/',
+          pattern: 'jobs.**',
+          match: true,
+        },
+        {
+          url: 'https://jobs.com/',
+          pattern: 'jobs.**.com',
+          match: true,
+        },
+        {
+          url: 'https://jobs.companyone.com/',
+          pattern: 'jobs.**.com',
+          match: true,
+        },
+        {
+          url: 'https://jobs.other.company.com/',
+          pattern: 'jobs.**.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/evil/',
+          pattern: '/evil/**',
+          match: true,
+        },
+        {
+          url: 'https://google.com/evil/villain',
+          pattern: '/evil/**',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/evil/not/good/',
+          pattern: '/evil/**',
+          match: true,
+        },
+        {
+          url: 'https://google.com/evil/company',
+          pattern: '/evil/**/company',
+          match: true,
+        },
+        {
+          url: 'https://google.com/evil/very/company',
+          pattern: '/evil/**/company',
+          match: true,
+        },
+        {
+          url: 'https://google.com/evil/very/very/company',
+          pattern: '/evil/**/company',
+          match: true,
+        },
+        {
+          url: 'http://google.com/majestic/',
+          pattern: '**.google.com/majestic/**',
+          match: true,
+        },
+        {
+          url: 'https://good.google.com/majestic/company',
+          pattern: '**.google.com/majestic/**',
+          match: true,
+        },
+      ],
+    };
+    const globMixPatterns = {
+      group: 'glob mix',
+      testCases: [
+        {
+          url: 'https://subdomain1.4.google.a/asterisk/path/',
+          pattern: '**.*.?.google.a*.**/**/*/path/',
+          match: true,
+        },
+        {
+          url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later/or/not/asterisk/path/',
+          pattern: '**.*.?.google.a*.**/**/*/path/',
+          match: true,
+        },
+        {
+          url: 'https://subdomain3.subdomain2.subdomain1.4.google.ask.me.later:12345/or/not/asterisk/path/',
+          pattern: '**.*.?.google.a*.**:?2*45*/**/*/path/',
+          match: true,
+        },
+      ],
+    };
+    const regexPatterns = {
+      group: 'regex',
+      testCases: [
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: '@^https://duckduckgo\\.com/',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: '@^duckduckgo\\.com/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: '@^https://DUCKDUCKGO\\.COM/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: 'i@^https://DUCKDUCKGO\\.COM/',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: '@^https://google\\.com/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://duckduckgo\\.com/',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://DUCKDUCKGO\\.COM/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: 'i@^https://DUCKDUCKGO\\.COM/',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=search+me+baby',
+          pattern: '@^https://duckduckgo\\.com/',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '@^https://duckduckgo\\.com/',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: 'i@^https://DUCKDUCKGO\\.COM/\\?q=SEARCH\\+ME\\+BABY',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
+          pattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=SEARCH+ME+BABY',
+          pattern: 'i@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=do+not+search+me+baby',
+          pattern: '@^https://duckduckgo\\.com/\\?q=search\\+me\\+baby',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://[^/]*duckduckgo',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://[^/]*DUCKDUCKGO',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: 'i@^https://[^/]*DUCKDUCKGO',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '@^https://[^/]*duckduckgo',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '@^https://\\S+/.*duckduckgo\\.com',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: '@^https://\\S+/.*DUCKDUCKGO\\.COM',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=duckduckgo.com',
+          pattern: 'i@^https://\\S+/.*DUCKDUCKGO\\.COM',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=DUCKDUCKGO.COM',
+          pattern: '@^https://\\S+/.*duckduckgo\\.com',
+          match: false,
+        },
+        {
+          url: 'https://google.com/?q=DUCKDUCKGO.COM',
+          pattern: 'i@^https://\\S+/.*duckduckgo\\.com',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@^https://\\S+/.*duckduckgo\\.com',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/',
+          pattern: '@^https://\\S+/.*duckduckgo\\.com.*',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@duckduckgo',
+          match: true,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: '@DUCKDUCKGO',
+          match: false,
+        },
+        {
+          url: 'https://duckduckgo.com/?q=search+me+baby',
+          pattern: 'i@DUCKDUCKGO',
+          match: true,
+        },
+        {
+          url: 'https://google.com/?q=do+not+search+me+baby',
+          pattern: '@duckduckgo',
+          match: false,
+        },
+      ],
+    };
 
     // [test case name, current container name, container name in matching pattern, match or not]
     const containerTestArgs = [
@@ -1384,16 +792,27 @@ describe('utils', () => {
       ],
     ];
 
-    for (const tc of testCases) {
-      for (const [testCaseGroupName, currCont, contInPattern, isContMatch] of containerTestArgs) {
-        const testCaseName = [
-          testCaseGroupName,
-          ...tc.name,
-        ].join(' / ');
+    for (const [testCaseGroupName, currCont, contInPattern, isContainerMatch] of containerTestArgs) {
+      for (const tcGroup of [
+        plainPatterns,
+        globQuestionMarkPatterns,
+        globSingleAsteriskPatterns,
+        globDoubleAsteriskPatterns,
+        globMixPatterns,
+        regexPatterns,
+      ]) {
+        for (const tc of tcGroup.testCases) {
+          const testCaseName = [
+            testCaseGroupName,
+            `pattern group: '${tcGroup.name}'`,
+            `pattern: '${tc.pattern}'`,
+            `URL: '${tc.url}'`,
+          ].join(' / ');
 
-        it(testCaseName, () => expect(
-          utils.matchesSavedMap(tc.url, currCont, { host: `${contInPattern}${tc.matchPattern}` })
-        ).toBe((tc.isUrlMatch && isContMatch)));
+          it(testCaseName, () => expect(
+            utils.matchesSavedMap(tc.url, currCont, { host: `${contInPattern}${tc.pattern}` })
+          ).toBe((tc.match && isContainerMatch)));
+        }
       }
     }
   });
