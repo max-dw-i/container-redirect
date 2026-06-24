@@ -21,7 +21,7 @@ webpack --config ./webpack.prod
 Copy-Item -Force -Recurse ./static/icons $env:BUILD_DIR
 web-ext build -s $env:BUILD_DIR/
 
-Compress-Archive -Path ./docs,./src,./package.json,./package-lock.json -DestinationPath $env:ARTIFACTS_DIR/source.zip
+Compress-Archive -Path ./src,./package.json,./package-lock.json -DestinationPath $env:ARTIFACTS_DIR/source.zip
 
 rimraf ./src/icons
 

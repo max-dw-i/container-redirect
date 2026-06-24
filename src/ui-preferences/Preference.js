@@ -9,12 +9,11 @@ import {createEl, qs} from './utils';
  */
 export default class Preference {
 
-  constructor({name, label, description = '', defaultValue, docUrl}) {
+  constructor({name, label, description = '', defaultValue}) {
     this.name = name;
     this.label = label;
     this.description = description;
     this._defaultValue = defaultValue;
-    this._docUrl = docUrl;
     this.$container = this._buildContainerEl();
     this._valueDb = null;
     this._listeners = {};
@@ -97,23 +96,11 @@ export default class Preference {
     const $label = qs('.preference__label', this.$container);
     $label.innerHTML = this.label;
     this._addDescription($label);
-    this._fillDocLink();
 
     // Append the el
     const elContainer = qs('.pref-el-container', this.$container);
     elContainer.appendChild(this.el);
     this._createOnChange();
-  }
-
-
-  _fillDocLink() {
-    if (!this._docUrl) return;
-
-    const $doc = qs('.pref-doc', this.$container);
-    $doc.innerHTML = '?';
-    $doc.href = this._docUrl;
-    $doc.target = '_blank';
-    $doc.classList.add('pref-doc--visible');
   }
 
   /**
