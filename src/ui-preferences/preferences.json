@@ -13,6 +13,56 @@
   },
   {
     "type": "group",
+    "name": "csvEditor",
+    "label": "CSV editor container defaults",
+    "description": "Default appearance for containers created from CSV rules that omit color or icon",
+    "preferences": [
+      {
+        "type": "dropdown",
+        "name": "missingContainerColor",
+        "label": "Container color",
+        "description": "Color used when a CSV rule does not specify one",
+        "defaultValue": "RANDOM",
+        "choices": [
+          {"name": "RANDOM", "label": "Random"},
+          {"name": "toolbar", "label": "Black"},
+          {"name": "blue", "label": "Blue"},
+          {"name": "green", "label": "Green"},
+          {"name": "orange", "label": "Orange"},
+          {"name": "pink", "label": "Pink"},
+          {"name": "purple", "label": "Purple"},
+          {"name": "red", "label": "Red"},
+          {"name": "turquoise", "label": "Turquoise"},
+          {"name": "yellow", "label": "Yellow"}
+        ]
+      },
+      {
+        "type": "dropdown",
+        "name": "missingContainerIcon",
+        "label": "Container icon",
+        "description": "Icon used when a CSV rule does not specify one",
+        "defaultValue": "RANDOM",
+        "choices": [
+          {"name": "RANDOM", "label": "Random"},
+          {"name": "circle", "label": "Circle"},
+          {"name": "fingerprint", "label": "Fingerprint"},
+          {"name": "briefcase", "label": "Briefcase"},
+          {"name": "dollar", "label": "Dollar"},
+          {"name": "cart", "label": "Cart"},
+          {"name": "gift", "label": "Gift"},
+          {"name": "vacation", "label": "Vacation"},
+          {"name": "food", "label": "Food"},
+          {"name": "fruit", "label": "Fruit"},
+          {"name": "pet", "label": "Pet"},
+          {"name": "tree", "label": "Tree"},
+          {"name": "chill", "label": "Chill"},
+          {"name": "fence", "label": "Fence"}
+        ]
+      }
+    ]
+  },
+  {
+    "type": "group",
     "name": "defaultContainer",
     "label": "Default container",
     "description": "Which container unmatched URLs will end up in",
