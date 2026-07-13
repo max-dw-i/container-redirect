@@ -87,7 +87,7 @@ google.com , Google , blue , fingerprint
 
 If the container defined in the rule already exists, the values of the color and icon will be ignored (the values of the already existing container will be fetched and used when the changes are saved).
 
-If the container defined in the rule does not exist, it will be created. If the optional values (color and icon) are not set, random values will be chosen.
+If the container defined in the rule does not exist, it will be created. If the optional values (color and icon) are not set, the CSV editor container defaults from the extension settings will be used. Both defaults are set to random unless you choose specific values.
 
 **IMPORTANT: the rule order matters! You might have more than one pattern that match your URL. In this case the first one is going to be used (the one that is closest to the top of the list).**
 

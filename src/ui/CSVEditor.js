@@ -1,8 +1,10 @@
-import ContextualIdentities, {RANDOM_VAL_CONST as RANDOM_CONTAINER_VAL} from '../ContextualIdentity';
+import ContextualIdentities from '../ContextualIdentity';
 import State from '../State';
 import Storage from '../Storage/HostStorage';
+import PreferenceStorage from '../Storage/PreferenceStorage';
 import {cleanHostInput, MAX_EXTENSION_POPUP_WIDTH, qs, sortMaps} from '../utils';
 import {hideLoader, showLoader} from './loader';
+import {resolveMissingContainerAppearance} from './missingContainerAppearance';
 import {hideToast, showToast} from './toast';
 
 const HOST_MAPS_SPLIT_KEY = ',';
@@ -116,6 +118,7 @@ class CSVEditor {
       .filter(s => s && s.charAt(0) !== '#');
     const maps = {};
     const missingContainers = {};
+    const preferences = await PreferenceStorage.getAll(true);
 
     await Promise.all(items.map((item, priority) => {
       const hostMapParts = item.split(HOST_MAPS_SPLIT_KEY);
@@ -145,12 +148,15 @@ class CSVEditor {
         if (trimmedContainer in missingContainers) {
           missingContainers[trimmedContainer].hosts.push(hostObj);
         } else {
+          const appearance = resolveMissingContainerAppearance(
+            preferences, containerColor, containerIcon
+          );
           missingContainers[trimmedContainer] = {
             hosts: [hostObj],
             container: {
               name: trimmedContainer,
-              color: containerColor.trim() || RANDOM_CONTAINER_VAL,
-              icon: containerIcon.trim() || RANDOM_CONTAINER_VAL,
+              color: appearance.color,
+              icon: appearance.icon,
             },
           };
         }
